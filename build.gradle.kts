@@ -11,6 +11,7 @@ version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 submit {
@@ -33,6 +34,8 @@ dependencies {
         exclude("org.jetbrains", "annotations")
     }
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    "graderImplementation"("org.tudalgo:algoutils-tutor:0.1.0-SNAPSHOT")
+    implementation("org.tudalgo:algoutils-student:0.1.0-SNAPSHOT")
 }
 
 application {
