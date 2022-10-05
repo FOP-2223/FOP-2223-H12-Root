@@ -34,8 +34,8 @@ dependencies {
         exclude("org.jetbrains", "annotations")
     }
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    "graderImplementation"("org.tudalgo:algoutils-tutor:0.1.0-SNAPSHOT")
-    implementation("org.tudalgo:algoutils-student:0.1.0-SNAPSHOT")
+    "graderImplementation"("org.tudalgo:algoutils-tutor:0.2.0-SNAPSHOT")
+    implementation("org.tudalgo:algoutils-student:0.2.0-SNAPSHOT")
 }
 
 application {
