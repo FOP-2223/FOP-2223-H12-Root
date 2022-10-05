@@ -1,5 +1,7 @@
 package h12.gui.components;
 
+import h12.json.JSON;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -9,6 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public abstract class FileOperationHandler {
 
     protected final ControlPanel controlPanel;
+    protected JSON json = new JSON();
 
     /**
      * Creates a new {@link FileOperationHandler}-Instance.
@@ -17,6 +20,24 @@ public abstract class FileOperationHandler {
      */
     public FileOperationHandler(ControlPanel controlPanel) {
         this.controlPanel = controlPanel;
+    }
+
+    /**
+     * Checks if the given file name is valid. A file name is valid if it is not null and ends with {@code ".json"}.
+     *
+     * @param fileName The file name to check.
+     * @return {@code true}, if this file name is valid. Otherwise {@code false}.
+     */
+    public boolean checkFileName(String fileName) {
+        if (fileName == null) {
+            showErrorDialog("No file selected!");
+            return false;
+        } else if (!fileName.endsWith(".json")) {
+            showErrorDialog("Invalid file type!");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -38,24 +59,6 @@ public abstract class FileOperationHandler {
     }
 
     /**
-     * Checks if the given file name is valid. A file name is valid if it is not null and ends with ".json".
-     *
-     * @param fileName The file name to check.
-     * @return {@code true}, if this file name is valid. Otherwise {@code false}.
-     */
-    public boolean checkFileName(String fileName) {
-        if (fileName == null) {
-            showErrorDialog("No file selected!");
-            return false;
-        } else if (!fileName.endsWith(".json")) {
-            showErrorDialog("Invalid file type!");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Shows a message to the user that the file was saved successfully.
      *
      * @param path The path to the saved file.
@@ -74,4 +77,13 @@ public abstract class FileOperationHandler {
             "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+
+    /**
+     * Sets the {@link JSON} Object used to save or load a canvas to the given {@link JSON} Object.
+     *
+     * @param json The new {@link JSON} Object.
+     */
+    public void setJson(JSON json) {
+        this.json = json;
+    }
 }

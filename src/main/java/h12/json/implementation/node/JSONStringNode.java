@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class JSONStringNode extends JSONNode implements JSONString {
 
-    String string;
+    private final String string;
 
     /**
      * Creates a new {@link JSONStringNode}-Instance.

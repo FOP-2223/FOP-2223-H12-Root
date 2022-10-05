@@ -5,6 +5,7 @@ import h12.json.LookaheadReader;
 /**
  * An abstract factory for creating a {@link JSONParser}.
  */
+@FunctionalInterface
 public interface JSONParserFactory {
 
     /**

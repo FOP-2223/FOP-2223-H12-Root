@@ -1,5 +1,7 @@
 package h12.json;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -10,21 +12,22 @@ import java.io.Reader;
  * <p> The method peek() allows the user the retrieve the next incoming char without skipping it.
  * Given the sequence {@code "abc"} the {@link LookaheadReader} would behave as followed:
  *
- * <pre>
- *     reader.peek(); // 'a'
- *     reader.read(); // 'a'
- *     reader.read(); // 'b'
- *     reader.peek(); // 'c'
- *     reader.peek(); // 'c'
- *     reader.read(); // 'c'
- *     reader.peek(); // -1
- *     reader.read(); // -1
+ * <pre>   Method called:       Returned value:
+ *
+ * reader.peek();       'a'
+ * reader.read();       'a'
+ * reader.read();       'b'
+ * reader.peek();       'c'
+ * reader.peek();       'c'
+ * reader.read();       'c'
+ * reader.peek();       -1
+ * reader.read();       -1
  * </pre>
  */
-public class LookaheadReader implements AutoCloseable {
+public class LookaheadReader extends Reader {
 
     private final BufferedReader reader;
-
+    private boolean isClosed = false;
     private int lookahead;
 
     /**
@@ -62,9 +65,50 @@ public class LookaheadReader implements AutoCloseable {
 
     /**
      * {@inheritDoc}
+     *
+     * @param characterBuffer Destination buffer
+     * @param off             Offset at which to start storing characters
+     * @param len             Maximum number of characters to read
+     * @return The number of characters read, or -1 if the end of the
+     * stream has been reached
+     * @throws IndexOutOfBoundsException If {@code off} is negative, or {@code len} is negative,
+     *                                   or {@code len} is greater than {@code characterBuffer.length - off}
+     * @throws IOException               If reading from the underlying Reader causes an {@link IOException}.
+     */
+    @Override
+    public int read(char @NotNull [] characterBuffer, int off, int len) throws IOException, IndexOutOfBoundsException {
+        if (off < 0 || len < 0 || len > characterBuffer.length - off) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (peek() == -1) return -1;
+
+        int i;
+        for (i = 0; i < len; i++) {
+            if (peek() == -1) {
+                break;
+            }
+            characterBuffer[i + off] = (char) read();
+        }
+
+        return i;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void close() throws IOException {
         reader.close();
+        isClosed = true;
+    }
+
+    /**
+     * Returns whether this {@link LookaheadReader} has been closed.
+     *
+     * @return {@code true}, if this {@link LookaheadReader} has been closed.
+     */
+    public boolean isClosed() {
+        return isClosed;
     }
 }

@@ -9,6 +9,7 @@ import h12.json.implementation.node.JSONNumberNode;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -59,21 +60,22 @@ public class ColorHelper {
      * @throws JSONParseException If the given {@link JSONElement} does not represent a valid number.
      */
     public static Color fromJSON(JSONElement jsonElement) throws JSONParseException, NullPointerException {
-        JSONElement[] array = jsonElement.getArray();
-
-        if (array.length != 4) {
-            throw new JSONParseException("Invalid format for a Color. Incorrect amount of entries. Expected %d, but was %d"
-                .formatted(4, array.length));
-        }
-
         try {
+            JSONElement[] array = jsonElement.getArray();
+
+            if (array.length != 4) {
+                throw new JSONParseException("Invalid format for a Color. Incorrect amount of entries. Expected %d, but was %d"
+                    .formatted(4, array.length));
+            }
+
+
             int r = array[0].getInteger();
             int g = array[1].getInteger();
             int b = array[2].getInteger();
             int a = array[3].getInteger();
 
             return new Color(r, g, b, a);
-        } catch (UnsupportedOperationException exc) {
+        } catch (UnsupportedOperationException | NoSuchElementException exc) {
             throw new JSONParseException("Invalid format for a Color");
         }
     }

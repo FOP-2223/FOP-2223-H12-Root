@@ -2,38 +2,37 @@ package h12.json.implementation.node;
 
 import h12.json.JSONElement;
 import h12.json.JSONObject;
-import h12.json.JSONString;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A class representing a JSON object implemented as a node.
- * <p> The object entries of the object are stored in a {@code Map&lt;JSONString, JSONElement&gt;}.
+ * <p> The object entries of the object are stored in a {@code Set&lt;JSONObjectEntry&gt;}.
  */
 public class JSONObjectNode extends JSONNode implements JSONObject {
 
-    Map<JSONString, JSONElement> objectEntries;
+    private final Set<JSONObjectEntry> objectEntries;
 
     /**
      * Creates a new {@link JSONObjectNode}-Instance.
      *
-     * @param map A map containing all the object entries of the object.
+     * @param set A {@link Set} containing all the object entries of the object.
      */
-    public JSONObjectNode(Map<JSONString, JSONElement> map) {
-        this.objectEntries = map;
+    public JSONObjectNode(Set<JSONObjectEntry> set) {
+        this.objectEntries = set;
     }
 
     /**
-     * Writes the string representation of this JSON array to the given writer using the current indentation.
+     * Writes the string representation of this {@link JSONObject} to the given {@link BufferedWriter} using the current indentation.
      * <p> The formatting follows these rules:
-     * <p> 1. Every {@code JSONElement} is written to the writer using their write methode.
-     * <p> 2. The opening bracket ({@code '&#123'}) and every object entry (including the {@code ','}) is followed by a line break ({@code '\n'}).
+     * <p> 1. Every {@link JSONObject.JSONObjectEntry} is written to the writer using their write methode.
+     * <p> 2. The opening bracket ({@code '&#123'}) and every {@link JSONObjectEntry} (including the {@code ','}) is followed by a line break ({@code '\n'}).
      * <p> 3. Every line break ({@code '\n'}) is followed by an indentation which is created using {@link JSONNode#writeIndentation(BufferedWriter, int)}.
-     * <p> 4. The indentation in front of an object entry is one higher than the current indentation. The indentation in front of the closing bracket ({@code  '&#125'}) is the current indentation.
+     * <p> 4. The indentation in front of an {@link JSONObjectEntry} is one higher than the current indentation. The indentation in front of the closing bracket ({@code  '&#125'}) is the current indentation.
      * <p> 5. The colon ({@code ':'}) in the middle of an object entry is followed by a single space character({@code ' '}).
      *
      * @param writer      The writer used to write the string representation.
@@ -44,11 +43,9 @@ public class JSONObjectNode extends JSONNode implements JSONObject {
     public void write(BufferedWriter writer, int indentation) throws IOException {
         writer.write("{\n");
         int i = 0;
-        for (Map.Entry<JSONString, JSONElement> entry : objectEntries.entrySet()) {
+        for (JSONObjectEntry entry : objectEntries) {
             writeIndentation(writer, indentation + 1);
-            entry.getKey().write(writer, indentation);
-            writer.write(": ");
-            entry.getValue().write(writer, indentation + 1);
+            entry.write(writer, indentation + 1);
             if (i < objectEntries.size() - 1) writer.write(",");
             writer.write("\n");
             i++;
@@ -63,8 +60,8 @@ public class JSONObjectNode extends JSONNode implements JSONObject {
      * @return a map containing the object entries.
      */
     @Override
-    public Map<JSONString, JSONElement> getObjectEntries() {
-        return Collections.unmodifiableMap(objectEntries);
+    public Set<JSONObjectEntry> getObjectEntries() {
+        return Collections.unmodifiableSet(objectEntries);
     }
 
     @Override
@@ -78,5 +75,73 @@ public class JSONObjectNode extends JSONNode implements JSONObject {
     @Override
     public int hashCode() {
         return Objects.hash(objectEntries);
+    }
+
+    /**
+     * An inner class representing an object entry implemented as a node.
+     */
+    public static class JSONObjectEntryNode extends JSONNode implements JSONObjectEntry {
+
+        private final JSONStringNode identifier;
+        private final JSONElement value;
+
+        /**
+         * Creates a new {@link JSONObjectEntryNode}-Instance.
+         *
+         * @param identifier The identifier of this {@link JSONObjectEntry}.
+         * @param value      The {@link JSONElement} associated with this {@link JSONObjectEntry}.
+         */
+        public JSONObjectEntryNode(JSONStringNode identifier, JSONElement value) {
+            this.identifier = identifier;
+            this.value = value;
+        }
+
+        /**
+         * Writes the identifier and the value of this {@link JSONObjectEntry} seperated by a colon({@code ':')}to the given {@link BufferedWriter} using the current indentation.
+         * <p> The colon is followed by a single space.
+         *
+         * @param writer      The writer used to write the string representation.
+         * @param indentation The current indentation (not used by this class).
+         * @throws IOException If an {@link IOException} occurs while writing to the writer.
+         */
+        @Override
+        public void write(BufferedWriter writer, int indentation) throws IOException {
+            identifier.write(writer, indentation);
+            writer.write(": ");
+            value.write(writer, indentation);
+        }
+
+        /**
+         * Returns the identifier of this {@link JSONObjectEntry}.
+         *
+         * @return The identifier of this {@link JSONObjectEntry}.
+         */
+        @Override
+        public String getIdentifier() {
+            return identifier.getString();
+        }
+
+        /**
+         * Returns the value of this {@link JSONObjectEntry}.
+         *
+         * @return The value of this {@link JSONObjectEntry}.
+         */
+        @Override
+        public JSONElement getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JSONObjectEntryNode that = (JSONObjectEntryNode) o;
+            return Objects.equals(identifier, that.identifier);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(identifier);
+        }
     }
 }

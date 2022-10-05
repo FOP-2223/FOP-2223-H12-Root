@@ -1,6 +1,6 @@
 package h12.gui.shapes;
 
-import h12.json.JSONElement;
+import h12.json.JSONNumber;
 import h12.json.JSONObject;
 import h12.json.JSONString;
 import h12.json.implementation.node.JSONArrayNode;
@@ -10,8 +10,9 @@ import h12.json.implementation.node.JSONStringNode;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
+
+import static h12.json.JSONObject.JSONObjectEntry;
 
 /**
  * A class representing a circle.
@@ -44,21 +45,7 @@ public class MyCircle extends MyShape {
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param g2d The {@link Graphics2D} object used to draw this {@link MyShape} object.
-     */
-    @Override
-    public void draw(Graphics2D g2d) {
-        Shape circle = new Ellipse2D.Double(x - radius, y - radius, 2.0 * radius, 2.0 * radius);
-        g2d.setColor(fillColor);
-        g2d.fill(circle);
-        g2d.setColor(borderColor);
-        g2d.draw(circle);
-    }
-
-    /**
-     * Converts this {@link MyCircle} to a {@link JSONObjectNode}. The {@link JSONObject} contains the following entries:
+     * Converts this {@link MyCircle} to a {@link JSONObjectNode}. The {@link JSONObjectNode} contains the following entries:
      * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
      * <p> x: The x-coordinate of the center as a {@link JSONNumberNode}.
      * <p> y: The y-coordinate of the center as a {@link JSONNumberNode}.
@@ -72,19 +59,28 @@ public class MyCircle extends MyShape {
      */
     @Override
     public JSONObject toJSON() {
-        Map<JSONString, JSONElement> map = new HashMap<>();
+        return JSONObject.of(
+            JSONObjectEntry.of("name", JSONString.of(TYPE.getSpelling())),
+            JSONObjectEntry.of("x", JSONNumber.of(x)),
+            JSONObjectEntry.of("y", JSONNumber.of(y)),
+            JSONObjectEntry.of("radius", JSONNumber.of(radius)),
+            JSONObjectEntry.of("fillColor", ColorHelper.toJSON(fillColor)),
+            JSONObjectEntry.of("borderColor", ColorHelper.toJSON(borderColor))
+        );
+    }
 
-        map.put(new JSONStringNode("name"), new JSONStringNode(TYPE.getSpelling()));
-
-        map.put(new JSONStringNode("x"), new JSONNumberNode(x));
-        map.put(new JSONStringNode("y"), new JSONNumberNode(y));
-        map.put(new JSONStringNode("radius"), new JSONNumberNode(radius));
-
-        map.put(new JSONStringNode("fillColor"), ColorHelper.toJSON(fillColor));
-        map.put(new JSONStringNode("borderColor"), ColorHelper.toJSON(borderColor));
-
-        return new JSONObjectNode(map);
-
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d The {@link Graphics2D} object used to draw this {@link MyShape} object.
+     */
+    @Override
+    public void draw(Graphics2D g2d) {
+        Shape circle = new Ellipse2D.Double(x - radius, y - radius, 2.0 * radius, 2.0 * radius);
+        g2d.setColor(fillColor);
+        g2d.fill(circle);
+        g2d.setColor(borderColor);
+        g2d.draw(circle);
     }
 
     /**
@@ -113,4 +109,16 @@ public class MyCircle extends MyShape {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyCircle circle = (MyCircle) o;
+        return radius == circle.radius && x == circle.x && y == circle.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(radius, x, y);
+    }
 }

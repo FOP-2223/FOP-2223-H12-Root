@@ -8,6 +8,8 @@ import org.tudalgo.algoutils.student.CrashException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * The control panel of the painting program.
@@ -65,9 +67,9 @@ public class ControlPanel extends JPanel {
      */
     private class ColorSelectorButtons extends JToolBar {
 
-        private final String SELECT_FILL_COLOR = "SELECT_FILL_COLOR";
-        private final String SELECT_BORDER_COLOR = "SELECT_BORDEr_COLOR";
-        private final String SELECT_BACKGROUND_COLOR = "SELECT_BACKGROUND_COLOR";
+        private final String select_fill_color = "SELECT_FILL_COLOR";
+        private final String select_border_color = "SELECT_BORDER_COLOR";
+        private final String select_background_color = "SELECT_BACKGROUND_COLOR";
 
         private final JButton fillColorButton;
         private final JButton borderColorButton;
@@ -77,9 +79,9 @@ public class ControlPanel extends JPanel {
          * Creates a new {@link ColorSelectorButtons}-Instance.
          */
         public ColorSelectorButtons() {
-            fillColorButton = createColorSelectorButton("Fill Color", "Choose a fill color for all Shapes", SELECT_FILL_COLOR, Color.WHITE);
-            borderColorButton = createColorSelectorButton("Border Color", "Choose a border Color for all Lines and Outlines", SELECT_BORDER_COLOR, Color.BLACK);
-            backgroundColorButton = createColorSelectorButton("Background Color", "Choose a background color", SELECT_BACKGROUND_COLOR, Color.WHITE);
+            fillColorButton = createColorSelectorButton("Fill Color", "Choose a fill color for all Shapes", select_fill_color, Color.WHITE);
+            borderColorButton = createColorSelectorButton("Border Color", "Choose a border Color for all Lines and Outlines", select_border_color, Color.BLACK);
+            backgroundColorButton = createColorSelectorButton("Background Color", "Choose a background color", select_background_color, Color.WHITE);
 
             add(fillColorButton);
             add(borderColorButton);
@@ -120,11 +122,11 @@ public class ControlPanel extends JPanel {
                     jButton.setBackground(color);
                     jButton.setForeground((299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000 >= 128 ? Color.black : Color.white);
 
-                    if (e.getActionCommand().equals(SELECT_FILL_COLOR)) {
+                    if (e.getActionCommand().equals(select_fill_color)) {
                         mf.getInteraction().setFillColor(color);
-                    } else if (e.getActionCommand().equals(SELECT_BORDER_COLOR)) {
+                    } else if (e.getActionCommand().equals(select_border_color)) {
                         mf.getInteraction().setBorderColor(color);
-                    } else if (e.getActionCommand().equals(SELECT_BACKGROUND_COLOR)) {
+                    } else if (e.getActionCommand().equals(select_background_color)) {
                         mf.getContentPanel().setBackground(color);
                     }
                 }
@@ -157,11 +159,9 @@ public class ControlPanel extends JPanel {
             ButtonGroup group = new ButtonGroup();
 
             for (ShapeType type : ShapeType.values()) {
-                String normalized = type.getSpelling() == null ? "" : type.getSpelling().replace("_", " ");
-                String capitalized = type.getSpelling() == null || type.getSpelling().length() < 1 ? "" :
-                    type.getSpelling().substring(0, 1).toUpperCase() + type.getSpelling().substring(1);
+                String capitalized = Arrays.stream(type.getSpelling().split("_")).map(string -> string.substring(0, 1).toUpperCase() + string.substring(1)).collect(Collectors.joining(" "));
 
-                AbstractButton button = createButton(capitalized, "Create a new " + normalized, e -> mf.getInteraction().setType(type), true);
+                AbstractButton button = createButton(capitalized, "Create a new " + capitalized, e -> mf.getInteraction().setType(type), true);
                 group.add(button);
                 add(button);
             }

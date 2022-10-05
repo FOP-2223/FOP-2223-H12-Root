@@ -1,18 +1,16 @@
 package h12.gui.shapes;
 
-import h12.json.JSONElement;
-import h12.json.JSONObject;
-import h12.json.JSONString;
+import h12.json.*;
 import h12.json.implementation.node.JSONArrayNode;
 import h12.json.implementation.node.JSONNumberNode;
 import h12.json.implementation.node.JSONObjectNode;
 import h12.json.implementation.node.JSONStringNode;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+
+import static h12.json.JSONObject.JSONObjectEntry;
 
 /**
  * A class representing a polygon.
@@ -29,7 +27,6 @@ public class MyPolygon extends MyShape {
     protected final List<Integer> y;
 
     private final int edges;
-
 
     /**
      * Creates a new {@link MyPolygon}-Instance.
@@ -61,6 +58,31 @@ public class MyPolygon extends MyShape {
     }
 
     /**
+     * Converts this {@link MyPolygon} to a {@link JSONObjectNode}. The {@link JSONObjectNode} contains the following entries:
+     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
+     * <p> edges: The amount of edges as a {@link JSONNumberNode}.
+     * <p> x: The x-coordinates of the polygon as a {@link JSONArrayNode} of {@link JSONNumberNode}.
+     * <p> y: The y-coordinates of the polygon as a {@link JSONArrayNode} of {@link JSONNumberNode}.
+     * <p> fillColor: The color used to fill the circle as a {@link JSONArrayNode}.
+     * <p> borderColor: The color used to draw the border of the circle as a {@link JSONArrayNode}.
+     *
+     * @return A {@link JSONObjectNode} containing the entries listed above.
+     * @see ColorHelper#toJSON(Color)
+     * @see ShapeType#getSpelling()
+     */
+    @Override
+    public JSONObject toJSON() {
+        return JSONObject.of(
+            JSONObjectEntry.of("name", JSONString.of(TYPE.getSpelling())),
+            JSONObjectEntry.of("edges", JSONNumber.of(edges)),
+            JSONObjectEntry.of("x", JSONArray.of(x.stream().map(JSONNumber::of).toArray(JSONElement[]::new))),
+            JSONObjectEntry.of("y", JSONArray.of(y.stream().map(JSONNumber::of).toArray(JSONElement[]::new))),
+            JSONObjectEntry.of("fillColor", ColorHelper.toJSON(fillColor)),
+            JSONObjectEntry.of("borderColor", ColorHelper.toJSON(borderColor))
+        );
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param g2d The {@link Graphics2D} object used to draw this {@link MyShape} object.
@@ -75,36 +97,6 @@ public class MyPolygon extends MyShape {
         g2d.setColor(borderColor);
         g2d.drawPolygon(polygon);
 
-    }
-
-    /**
-     * Converts this {@link MyPolygon} to a {@link JSONObjectNode}. The {@link JSONObject} contains the following entries:
-     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
-     * <p> edges: The amount of edges as a {@link JSONNumberNode}.
-     * <p> x: The x-coordinates of the polygon as a {@link JSONArrayNode} of {@link JSONNumberNode}.
-     * <p> y: The y-coordinates of the polygon as a {@link JSONArrayNode} of {@link JSONNumberNode}.
-     * <p> fillColor: The color used to fill the circle as a {@link JSONArrayNode}.
-     * <p> borderColor: The color used to draw the border of the circle as a {@link JSONArrayNode}.
-     *
-     * @return A {@link JSONObjectNode} containing the entries listed above.
-     * @see ColorHelper#toJSON(Color)
-     * @see ShapeType#getSpelling()
-     */
-    @Override
-    public JSONObject toJSON() {
-        Map<JSONString, JSONElement> map = new HashMap<>();
-
-        map.put(new JSONStringNode("name"), new JSONStringNode(TYPE.getSpelling()));
-
-        map.put(new JSONStringNode("edges"), new JSONNumberNode(edges));
-
-        map.put(new JSONStringNode("x"), new JSONArrayNode(x.stream().map(JSONNumberNode::new).collect(Collectors.toList())));
-        map.put(new JSONStringNode("y"), new JSONArrayNode(y.stream().map(JSONNumberNode::new).collect(Collectors.toList())));
-
-        map.put(new JSONStringNode("fillColor"), ColorHelper.toJSON(fillColor));
-        map.put(new JSONStringNode("borderColor"), ColorHelper.toJSON(borderColor));
-
-        return new JSONObjectNode(map);
     }
 
     /**
@@ -154,10 +146,21 @@ public class MyPolygon extends MyShape {
         else x.set(x.size() - 1, newX);
     }
 
-
     private void replaceLastY(int newY) {
         if (y.size() == 0) y.add(newY);
         else y.set(y.size() - 1, newY);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyPolygon myPolygon = (MyPolygon) o;
+        return edges == myPolygon.edges && Objects.equals(x, myPolygon.x) && Objects.equals(y, myPolygon.y);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, edges);
+    }
 }

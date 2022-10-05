@@ -7,8 +7,8 @@ import h12.json.JSONObject;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * An abstract class for a shape that can be interactively drawn in a {@link ContentPanel}.
@@ -17,6 +17,43 @@ public abstract class MyShape {
 
     protected Color fillColor;
     protected Color borderColor;
+
+    private static JSONToShapeConverter jsonToShapeConverter = new JSONToShapeConverter();
+
+    /**
+     * Converts this {@link MyShape} object to a JSONElement.
+     *
+     * @return The converted {@link JSONElement}.
+     */
+    public abstract JSONElement toJSON();
+
+    /**
+     * Converts the content of the given {@link JSONObject} to a {@link MyShape}.
+     *
+     * @param element The {@link JSONElement} to convert.
+     * @return The {@link MyShape} represented by the given {@link JSONObject}.
+     * @throws JSONParseException If the given {@link JSONObject} does not represent a valid shape.
+     */
+    public static MyShape fromJSON(JSONElement element) throws JSONParseException {
+        try {
+            String name = element.getValueOf("name").getString();
+            ShapeType type = ShapeType.fromString(name);
+
+            if (type == null) {
+                throw new JSONParseException("Invalid shape type: %s!".formatted(name));
+            }
+
+            return switch (type) {
+                case RECTANGLE -> jsonToShapeConverter.rectangleFromJSON(element);
+                case CIRCLE -> jsonToShapeConverter.circleFromJSON(element);
+                case CUSTOM_LINE -> jsonToShapeConverter.customLineFromJSON(element);
+                case POLYGON -> jsonToShapeConverter.polygonFromJSON(element);
+                default -> throw new JSONParseException("Invalid shape type: %s!".formatted(name));
+            };
+        } catch (UnsupportedOperationException | NoSuchElementException exc) {
+            throw new JSONParseException("Invalid MyShape format!");
+        }
+    }
 
     /**
      * Draws this {@link MyShape} using the given {@link Graphics2D} object.
@@ -43,82 +80,6 @@ public abstract class MyShape {
      * @return {@code true} if the creation process is finished. Otherwise, false.
      */
     public abstract boolean nextPhase(int x, int y, int phase);
-
-    /**
-     * Converts this {@link MyShape} object to a JSONElement.
-     *
-     * @return The converted {@link JSONElement}.
-     */
-    public abstract JSONElement toJSON();
-
-    /**
-     * Converts the content of the given {@link JSONObject} to a {@link MyShape}.
-     *
-     * @param element The {@link JSONElement} to convert.
-     * @return The {@link MyShape} represented by the given {@link JSONObject}.
-     * @throws JSONParseException If the given {@link JSONObject} does not represent a valid shape.
-     */
-    public static MyShape fromJSON(JSONElement element) throws JSONParseException {
-
-        try {
-            String name = element.getEntry("name").getString();
-            ShapeType type = ShapeType.fromString(name);
-
-            if (type == null) {
-                throw new JSONParseException("Invalid shape type: %s!".formatted(name));
-            }
-
-            return switch (type) {
-                case RECTANGLE -> {
-                    int x = element.getEntry("x").getInteger();
-                    int y = element.getEntry("y").getInteger();
-                    int height = element.getEntry("height").getInteger();
-                    int width = element.getEntry("width").getInteger();
-
-                    Color borderColor = ColorHelper.fromJSON(element.getEntry("borderColor"));
-                    Color fillColor = ColorHelper.fromJSON(element.getEntry("fillColor"));
-
-                    yield new MyRectangle(x, y, height, width, fillColor, borderColor);
-                }
-
-                case CIRCLE -> {
-                    int x = element.getEntry("x").getInteger();
-                    int y = element.getEntry("y").getInteger();
-                    int radius = element.getEntry("radius").getInteger();
-
-                    Color borderColor = ColorHelper.fromJSON(element.getEntry("borderColor"));
-                    Color fillColor = ColorHelper.fromJSON(element.getEntry("fillColor"));
-
-                    yield new MyCircle(x, y, radius, fillColor, borderColor);
-                }
-
-                case CUSTOM_LINE -> {
-                    Color color = ColorHelper.fromJSON(element.getEntry("color"));
-
-                    List<Integer> x = Arrays.stream(element.getEntry("x").getArray()).map(JSONElement::getInteger).toList();
-                    List<Integer> y = Arrays.stream(element.getEntry("y").getArray()).map(JSONElement::getInteger).toList();
-
-                    yield new CustomLine(x, y, color);
-                }
-
-                case POLYGON -> {
-                    int edges = element.getEntry("edges").getInteger();
-
-                    List<Integer> x = Arrays.stream(element.getEntry("x").getArray()).map(JSONElement::getInteger).toList();
-                    List<Integer> y = Arrays.stream(element.getEntry("y").getArray()).map(JSONElement::getInteger).toList();
-
-                    Color borderColor = ColorHelper.fromJSON(element.getEntry("borderColor"));
-                    Color fillColor = ColorHelper.fromJSON(element.getEntry("fillColor"));
-
-                    yield new MyPolygon(x, y, fillColor, borderColor, edges);
-                }
-
-                default -> throw new JSONParseException("Invalid shape type: %s!".formatted(name));
-            };
-        } catch (UnsupportedOperationException exc) {
-            throw new JSONParseException("Invalid MyShape format!");
-        }
-    }
 
     /**
      * Creates a new {@link MyShape} object of the given {@link ShapeType}.
@@ -157,6 +118,15 @@ public abstract class MyShape {
      */
     public void setBorderColor(Color borderColor) {
         this.borderColor = borderColor;
+    }
+
+    /**
+     * Sets the {@link JSONToShapeConverter} used to create {@link MyShape}s from {@link JSONElement}s to the given {@link JSONToShapeConverter}.
+     *
+     * @param jsonToShapeConverter The new {@link JSONToShapeConverter}.
+     */
+    public static void setJsonToShapeConverter(JSONToShapeConverter jsonToShapeConverter) {
+        MyShape.jsonToShapeConverter = jsonToShapeConverter;
     }
 }
 

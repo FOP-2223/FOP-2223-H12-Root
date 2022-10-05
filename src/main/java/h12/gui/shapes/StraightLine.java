@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class StraightLine extends MyPolygon {
 
-    public static final ShapeType TYPE = ShapeType.STRAIGHT_LINE;
-
     /**
      * Creates a new {@link MyCircle}-Instance.
      *

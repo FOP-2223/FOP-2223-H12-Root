@@ -6,11 +6,11 @@ import h12.json.implementation.node.JSONStringNode;
 import java.io.IOException;
 
 /**
- * A parser based on a node implementation that parses a JSON string.
+ * A parser based on a node implementation that parses a {@link h12.json.JSONString}.
  *
  * <p> Example (The {@code '"'} characters are part of the input):
  * <p> Input: "Hello World!"
- * <p> Output: {@code new JSONStringNode("Hello World!")}
+ * <p> Output: {@code JSONString.of("Hello World!")}
  */
 public class JSONStringNodeParser implements JSONNodeParser {
 
@@ -26,7 +26,7 @@ public class JSONStringNodeParser implements JSONNodeParser {
     }
 
     /**
-     * Parses a JSON string.
+     * Parses a {@link h12.json.JSONString}.
      *
      * @return The parsed {@link JSONStringNode}.
      * @throws IOException        If an {@link IOException} occurs while reading the contents of the reader.

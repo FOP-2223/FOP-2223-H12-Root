@@ -1,6 +1,6 @@
 package h12.gui.shapes;
 
-import h12.json.JSONElement;
+import h12.json.JSONNumber;
 import h12.json.JSONObject;
 import h12.json.JSONString;
 import h12.json.implementation.node.JSONArrayNode;
@@ -9,8 +9,7 @@ import h12.json.implementation.node.JSONObjectNode;
 import h12.json.implementation.node.JSONStringNode;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * A class representing a rectangle.
@@ -46,6 +45,33 @@ public class MyRectangle extends MyShape {
     }
 
     /**
+     * Converts this {@link MyRectangle} to a {@link JSONObjectNode}. The {@link JSONObjectNode} contains the following entries:
+     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
+     * <p> x: The x-coordinate of the upper left corner as a {@link JSONNumberNode}.
+     * <p> y: The y-coordinate of the upper left corner as a {@link JSONNumberNode}.
+     * <p> width: The width of the rectangle as a {@link JSONNumberNode}.
+     * <p> height: The height of the rectangle as a {@link JSONNumberNode}.
+     * <p> fillColor: The color used to fill the circle as a {@link JSONArrayNode}.
+     * <p> borderColor: The color used to draw the border of the circle as a {@link JSONArrayNode}.
+     *
+     * @return A {@link JSONObjectNode} containing the entries listed above.
+     * @see ColorHelper#toJSON(Color)
+     * @see ShapeType#getSpelling()
+     */
+    @Override
+    public JSONObject toJSON() {
+        return JSONObject.of(
+            JSONObject.JSONObjectEntry.of("name", JSONString.of(TYPE.getSpelling())),
+            JSONObject.JSONObjectEntry.of("x", JSONNumber.of(x)),
+            JSONObject.JSONObjectEntry.of("y", JSONNumber.of(y)),
+            JSONObject.JSONObjectEntry.of("height", JSONNumber.of(height)),
+            JSONObject.JSONObjectEntry.of("width", JSONNumber.of(width)),
+            JSONObject.JSONObjectEntry.of("fillColor", ColorHelper.toJSON(fillColor)),
+            JSONObject.JSONObjectEntry.of("borderColor", ColorHelper.toJSON(borderColor))
+        );
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param g2d The {@link Graphics2D} object used to draw this {@link MyShape} object.
@@ -75,37 +101,6 @@ public class MyRectangle extends MyShape {
     }
 
     /**
-     * Converts this {@link MyRectangle} to a {@link JSONObjectNode}. The {@link JSONObject} contains the following entries:
-     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
-     * <p> x: The x-coordinate of the upper left corner as a {@link JSONNumberNode}.
-     * <p> y: The y-coordinate of the upper left corner as a {@link JSONNumberNode}.
-     * <p> width: The width of the rectangle as a {@link JSONNumberNode}.
-     * <p> height: The height of the rectangle as a {@link JSONNumberNode}.
-     * <p> fillColor: The color used to fill the circle as a {@link JSONArrayNode}.
-     * <p> borderColor: The color used to draw the border of the circle as a {@link JSONArrayNode}.
-     *
-     * @return A {@link JSONObjectNode} containing the entries listed above.
-     * @see ColorHelper#toJSON(Color)
-     * @see ShapeType#getSpelling()
-     */
-    @Override
-    public JSONObject toJSON() {
-        Map<JSONString, JSONElement> map = new HashMap<>();
-
-        map.put(new JSONStringNode("name"), new JSONStringNode(TYPE.getSpelling()));
-
-        map.put(new JSONStringNode("x"), new JSONNumberNode(x));
-        map.put(new JSONStringNode("y"), new JSONNumberNode(y));
-        map.put(new JSONStringNode("height"), new JSONNumberNode(height));
-        map.put(new JSONStringNode("width"), new JSONNumberNode(width));
-
-        map.put(new JSONStringNode("fillColor"), ColorHelper.toJSON(fillColor));
-        map.put(new JSONStringNode("borderColor"), ColorHelper.toJSON(borderColor));
-
-        return new JSONObjectNode(map);
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @param x     The new x-coordinate.
@@ -132,4 +127,16 @@ public class MyRectangle extends MyShape {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyRectangle that = (MyRectangle) o;
+        return x == that.x && y == that.y && height == that.height && width == that.width;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, height, width);
+    }
 }

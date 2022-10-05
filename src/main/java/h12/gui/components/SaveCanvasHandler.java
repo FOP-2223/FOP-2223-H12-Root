@@ -4,16 +4,17 @@ import h12.exceptions.JSONWriteException;
 import h12.gui.shapes.ColorHelper;
 import h12.gui.shapes.MyShape;
 import h12.ioFactory.FileSystemIOFactory;
-import h12.json.*;
+import h12.json.JSONArray;
+import h12.json.JSONElement;
+import h12.json.JSONObject;
 import h12.json.implementation.node.JSONArrayNode;
 import h12.json.implementation.node.JSONObjectNode;
-import h12.json.implementation.node.JSONStringNode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static h12.json.JSONObject.JSONObjectEntry;
 
 /**
  * A class handling the saving of a canvas to a JSON file.
@@ -44,10 +45,10 @@ public class SaveCanvasHandler extends FileOperationHandler {
             return;
         }
 
+        json.setIOFactory(new FileSystemIOFactory());
+
         try {
-            JSON.setIOFactory(new FileSystemIOFactory());
-            JSON json = new JSON(canvasToJSONObject());
-            json.write(fileName);
+            json.write(fileName, canvasToJSONObject());
             showSuccessDialog(fileName);
         } catch (JSONWriteException exc) {
             showErrorDialog(exc.getMessage());
@@ -65,14 +66,10 @@ public class SaveCanvasHandler extends FileOperationHandler {
      * @see MyShape#toJSON()
      */
     public JSONObject canvasToJSONObject() {
-        Map<JSONString, JSONElement> map = new HashMap<>();
-
-        map.put(new JSONStringNode("background"), ColorHelper.toJSON(background));
-
-        JSONArray contentsArray = new JSONArrayNode(contents.stream().map(MyShape::toJSON).toList());
-        map.put(new JSONStringNode("shapes"), contentsArray);
-
-        return new JSONObjectNode(map);
+        return JSONObject.of(
+            JSONObjectEntry.of("background", ColorHelper.toJSON(background)),
+            JSONObjectEntry.of("shapes", JSONArray.of(contents.stream().map(MyShape::toJSON).toArray(JSONElement[]::new)))
+        );
     }
 
 

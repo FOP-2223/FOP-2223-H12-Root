@@ -5,18 +5,18 @@ import h12.gui.shapes.ColorHelper;
 import h12.gui.shapes.MyShape;
 import h12.ioFactory.FileSystemIOFactory;
 import h12.json.JSON;
+import h12.json.JSONElement;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * A class handling the loading of a canvas from a JSON file.
  */
-class LoadCanvasHandler extends FileOperationHandler {
-
-    private final JSON json;
+public class LoadCanvasHandler extends FileOperationHandler {
 
     private List<MyShape> shapes;
     private Color backgroundColor;
@@ -42,11 +42,10 @@ class LoadCanvasHandler extends FileOperationHandler {
             return;
         }
 
-        JSON.setIOFactory(new FileSystemIOFactory());
+        json.setIOFactory(new FileSystemIOFactory());
 
         try {
-            json.parse(fileName);
-            canvasFromJSONObject();
+            canvasFromJSONElement(json.parse(fileName));
             setupNewFrame();
         } catch (JSONParseException exc) {
             showErrorDialog(exc.getMessage());
@@ -54,22 +53,22 @@ class LoadCanvasHandler extends FileOperationHandler {
     }
 
     /**
-     * Reads the content of the root of the {@link #json} and saves them in the attributes {@link #shapes} and {@link #backgroundColor}.
+     * Reads the content of the given {@link JSONElement} and saves them in the attributes {@link #shapes} and {@link #backgroundColor}.
      *
+     * @param element The {@link JSONElement} to convert to a canvas.
      * @throws JSONParseException If the json file does not describe a valid canvas.
      */
-    public void canvasFromJSONObject() throws JSONParseException {
-
-        if (json.getRoot() == null) {
+    public void canvasFromJSONElement(JSONElement element) throws JSONParseException {
+        if (element == null) {
             throw new JSONParseException("The given file is empty!");
         }
 
         try {
-            shapes = Arrays.stream(json.getRoot().getEntry("shapes").getArray())
+            shapes = Arrays.stream(element.getValueOf("shapes").getArray())
                 .map(MyShape::fromJSON)
                 .toList();
-            backgroundColor = ColorHelper.fromJSON(json.getRoot().getEntry("background"));
-        } catch (UnsupportedOperationException exc) {
+            backgroundColor = ColorHelper.fromJSON(element.getValueOf("background"));
+        } catch (UnsupportedOperationException | NoSuchElementException exc) {
             throw new JSONParseException("Invalid MyShape format!");
         }
     }

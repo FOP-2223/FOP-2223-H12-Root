@@ -1,18 +1,14 @@
 package h12.gui.shapes;
 
-import h12.json.JSONElement;
-import h12.json.JSONObject;
-import h12.json.JSONString;
+import h12.json.*;
 import h12.json.implementation.node.JSONArrayNode;
 import h12.json.implementation.node.JSONNumberNode;
 import h12.json.implementation.node.JSONObjectNode;
 import h12.json.implementation.node.JSONStringNode;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * A class representing a custom line.
@@ -23,8 +19,8 @@ public class CustomLine extends MyShape {
 
     public static final ShapeType TYPE = ShapeType.CUSTOM_LINE;
 
-    List<Integer> x;
-    List<Integer> y;
+    private final List<Integer> x;
+    private final List<Integer> y;
 
     /**
      * Creates a new {@link CustomLine}-Instance.
@@ -37,6 +33,27 @@ public class CustomLine extends MyShape {
         this.x = x;
         this.y = y;
         this.borderColor = color;
+    }
+
+    /**
+     * Converts this {@link CustomLine} to a {@link JSONObjectNode}. The {@link JSONObjectNode} contains the following entries:
+     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
+     * <p> x: The x-coordinates of the line as a {@link JSONArrayNode} of {@link JSONNumberNode}.
+     * <p> y: The y-coordinates of the line as a {@link JSONArrayNode} of {@link JSONNumberNode}.
+     * <p> borderColor: The color used to draw the line as a {@link JSONArrayNode}.
+     *
+     * @return A {@link JSONObjectNode} containing the entries listed above.
+     * @see ColorHelper#toJSON(Color)
+     * @see ShapeType#getSpelling()
+     */
+    @Override
+    public JSONObject toJSON() {
+        return JSONObject.of(
+            JSONObject.JSONObjectEntry.of("name", JSONString.of(TYPE.getSpelling())),
+            JSONObject.JSONObjectEntry.of("x", JSONArray.of(x.stream().map(JSONNumber::of).toArray(JSONElement[]::new))),
+            JSONObject.JSONObjectEntry.of("y", JSONArray.of(y.stream().map(JSONNumber::of).toArray(JSONElement[]::new))),
+            JSONObject.JSONObjectEntry.of("borderColor", ColorHelper.toJSON(borderColor))
+        );
     }
 
     /**
@@ -79,29 +96,16 @@ public class CustomLine extends MyShape {
         return true;
     }
 
-    /**
-     * Converts this {@link CustomLine} to a {@link JSONObjectNode}. The {@link JSONObject} contains the following entries:
-     * <p> name: The {@link ShapeType} as a {@link JSONStringNode}.
-     * <p> x: The x-coordinates of the line as a {@link JSONArrayNode} of {@link JSONNumberNode}.
-     * <p> y: The y-coordinates of the line as a {@link JSONArrayNode} of {@link JSONNumberNode}.
-     * <p> color: The color used to Draw the line as a {@link JSONArrayNode}.
-     *
-     * @return A {@link JSONObjectNode} containing the entries listed above.
-     * @see ColorHelper#toJSON(Color)
-     * @see ShapeType#getSpelling()
-     */
     @Override
-    public JSONElement toJSON() {
-        Map<JSONString, JSONElement> map = new HashMap<>();
-
-        map.put(new JSONStringNode("name"), new JSONStringNode(TYPE.getSpelling()));
-
-        map.put(new JSONStringNode("color"), ColorHelper.toJSON(borderColor));
-
-        map.put(new JSONStringNode("x"), new JSONArrayNode(x.stream().map(JSONNumberNode::new).collect(Collectors.toList())));
-        map.put(new JSONStringNode("y"), new JSONArrayNode(y.stream().map(JSONNumberNode::new).collect(Collectors.toList())));
-
-        return new JSONObjectNode(map);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomLine that = (CustomLine) o;
+        return Objects.equals(x, that.x) && Objects.equals(y, that.y);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

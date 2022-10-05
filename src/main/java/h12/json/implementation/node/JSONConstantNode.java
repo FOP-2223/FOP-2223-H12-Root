@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class JSONConstantNode extends JSONNode implements JSONConstant {
 
-    JSONConstants constant;
+    private final JSONConstants constant;
 
     /**
      * Creates a new {@link JSONConstantNode}-Instance.
@@ -24,7 +24,7 @@ public class JSONConstantNode extends JSONNode implements JSONConstant {
     }
 
     /**
-     * Writes the string representation of this constant to the given writer.
+     * Writes the string representation of this {@link JSONConstant} to the given writer.
      * <p> For the correct spelling of the constant see {@link JSONConstants#getSpelling()}.
      *
      * @param writer      The writer used to write the string representation.

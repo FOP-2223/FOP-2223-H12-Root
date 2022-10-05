@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class MyTriangle extends MyPolygon {
 
-    public static final ShapeType TYPE = ShapeType.TRIANGLE;
-
     /**
      * Creates a new {@link MyTriangle}-Instance.
      *
