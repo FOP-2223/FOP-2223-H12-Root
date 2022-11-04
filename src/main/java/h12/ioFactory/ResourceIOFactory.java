@@ -8,25 +8,12 @@ import java.nio.charset.StandardCharsets;
  */
 public class ResourceIOFactory implements IOFactory {
 
-    private final ClassLoader classLoader;
-
     /**
      * Creates a new {@link ResourceIOFactory}-Instance.
      *
      * <p> The {@link ClassLoader} used to locate resources will default to the {@link ClassLoader} of this class.
      */
-    public ResourceIOFactory() {
-        classLoader = getClass().getClassLoader();
-    }
-
-    /**
-     * Creates a new {@link ResourceIOFactory}-Instance.
-     *
-     * @param classLoader The {@link ClassLoader} used by this {@link ResourceIOFactory} to locate a given resource.
-     */
-    public ResourceIOFactory(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
+    public ResourceIOFactory() {}
 
     /**
      * {@inheritDoc}
@@ -37,7 +24,7 @@ public class ResourceIOFactory implements IOFactory {
      */
     @Override
     public BufferedReader createReader(String resourceName) throws IOException {
-        InputStream resourceStream = classLoader.getResourceAsStream(resourceName);
+        InputStream resourceStream = getClass().getResourceAsStream(resourceName);
         if (resourceStream == null) {
             throw new IOException("Could not find %s/%s".formatted(getClass().getPackageName(), resourceName));
         }
