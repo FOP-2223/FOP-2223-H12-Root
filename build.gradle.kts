@@ -1,33 +1,41 @@
+@Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     java
     application
-    id("org.sourcegrade.style") version "1.3.0"
-    id("org.sourcegrade.jagr-gradle") version "0.6.0-SNAPSHOT"
+    alias(libs.plugins.style)
+    alias(libs.plugins.jagr.gradle)
 }
 
-version = "0.1.0-SNAPSHOT"
+version = file("version").readLines().first()
 
 jagr {
     assignmentId.set("h12")
     submissions {
-        create("main") {
+        val main by creating {
             studentId.set("ab12cdef")
             firstName.set("sol_first")
             lastName.set("sol_last")
         }
     }
     graders {
-        create("grader") {
-            graderName.set("FOP-2223-H12")
+        val graderPublic by creating {
+            graderName.set("FOP-2223-H12-Public")
             rubricProviderName.set("h12.H12_RubricProvider")
+            configureDependencies {
+                implementation(libs.algoutils.tutor)
+            }
+        }
+        val graderPrivate by creating {
+            parent(graderPublic)
+            graderName.set("FOP-2223-H12-Private")
         }
     }
 }
 
 dependencies {
-    implementation("org.tudalgo:algoutils-tutor:0.2.0-SNAPSHOT")
-    implementation("org.jetbrains:annotations:23.0.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    implementation(libs.annotations)
+    implementation(libs.algoutils.student)
+    testImplementation(libs.junit.core)
 }
 
 application {
@@ -36,7 +44,7 @@ application {
 
 tasks {
     val runDir = File("build/run")
-    named<JavaExec>("run") {
+    withType<JavaExec> {
         doFirst {
             runDir.mkdirs()
         }
@@ -49,8 +57,6 @@ tasks {
         workingDir = runDir
         useJUnitPlatform()
     }
-
-
     withType<JavaCompile> {
         options.encoding = "UTF-8"
         sourceCompatibility = "17"
