@@ -30,6 +30,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testCreateBufferedReader")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testCreateBufferedWriter")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -38,6 +40,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_2_LookaheadReaderTest.class.getDeclaredMethod("testLookaheadReader", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_2_LookaheadReaderTest.class.getDeclaredMethod("testEmptyLookaheadReader")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -58,6 +62,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONNumberTest.class.getDeclaredMethod("testWriteJSONDouble", Double.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONStringTest.class.getDeclaredMethod("testWriteJSONString", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONConstantTest.class.getDeclaredMethod("testWriteJSONConstant")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -68,6 +74,7 @@ public class H12_RubricProvider implements RubricProvider {
         .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONObjectNode funktioniert vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONObjectTest.class.getDeclaredMethod("testWriteJSONObject", String.class, int.class, String.class, int.class, String.class, int.class, int.class)))
+            .pointsFailedMin()
             .pointsPassedMax()
             .build())
         .maxPoints(2)
@@ -77,6 +84,7 @@ public class H12_RubricProvider implements RubricProvider {
         .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONArrayNode funktioniert vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONArrayTest.class.getDeclaredMethod("testWriteJSONArray", int.class, int.class, int.class)))
+            .pointsFailedMin()
             .pointsPassedMax()
             .build())
         .maxPoints(2)
@@ -94,6 +102,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testSkipIndentationEmpty")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testPeek", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testPeekEmpty")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -104,6 +114,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testAcceptItEmpty")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testAcceptSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testAcceptException", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -112,6 +124,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testCheckEndOfFileSuccess")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testCheckEndOfFileException")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -120,6 +134,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testReadUntil", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testReadUntilException")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -137,6 +153,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testParseNumber", Integer.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testParseString", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testParseEmpty")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -150,6 +168,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONNumberNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONNumberNodeParserTest.class.getDeclaredMethod("testParseException", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -158,6 +178,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONConstantNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONConstantNodeParserTest.class.getDeclaredMethod("testParseException", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -166,6 +188,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectEntryParserTest.class.getDeclaredMethod("testParseSuccess", String.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectEntryParserTest.class.getDeclaredMethod("testParseException", String.class, Integer.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -177,6 +201,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class, Integer.class, String.class, Integer.class, String.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectNodeParserTest.class.getDeclaredMethod("testParseException", String.class, Integer.class, String.class, Integer.class, String.class, Integer.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -188,6 +214,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONArrayNodeParserTest.class.getDeclaredMethod("testParseSuccess", Integer.class, Integer.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONArrayNodeParserTest.class.getDeclaredMethod("testParseException", Integer.class, Integer.class, Integer.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -209,6 +237,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_1_JSONParserTest.class.getDeclaredMethod("testParseSuccess")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_1_JSONParserTest.class.getDeclaredMethod("testParseIOException")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -226,6 +256,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testWriteSuccess")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testWriteExceptionUnsupportedWriting")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testWriteIOException")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -238,6 +270,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testParseSuccess")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testParseExceptionUnsupportedReading")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H4_2_JSONTest.class.getDeclaredMethod("testParseIOException")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -268,6 +302,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_2_MyShapeTest.class.getDeclaredMethod("testFromJSONSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_2_MyShapeTest.class.getDeclaredMethod("testFromJSONInvalidFormat")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_2_MyShapeTest.class.getDeclaredMethod("testFromJSONInvalidShapeType", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -276,6 +312,8 @@ public class H12_RubricProvider implements RubricProvider {
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_1_JSONToShapeConverterTest.class.getDeclaredMethod("testFromJSONSuccess", Integer.class, Integer.class, Integer.class, Integer.class, String.class, String.class, Integer.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_1_JSONToShapeConverterTest.class.getDeclaredMethod("testFromJSONInvalidFormat")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -290,6 +328,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_3_FileOperationHandlerTest.class.getDeclaredMethod("testCheckFileNameSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_3_FileOperationHandlerTest.class.getDeclaredMethod("testCheckFileNameExceptionNull")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_3_FileOperationHandlerTest.class.getDeclaredMethod("testCheckFileNameExceptionInvalidFileType", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -310,6 +350,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_4_SaveCanvasHandlerTest.class.getDeclaredMethod("testSaveSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_4_SaveCanvasHandlerTest.class.getDeclaredMethod("testSaveException", String.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_4_SaveCanvasHandlerTest.class.getDeclaredMethod("testSaveInvalidFileName", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -319,7 +361,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H5_5_1 = DEFAULT_CRITERION.apply("Die Methode canvasFromJSONObject(JSONElement) der Klasse LoadCanvasHandler funktioniert für korrekte Eingaben",
-        () -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testCanvasFromJSONElementInvalidFormat"));
+        () -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testCanvasFromJSONObjectSuccess", String.class, Integer.class, Integer.class, Integer.class, String.class, String.class));
 
     private static final Criterion H5_5_2 = Criterion.builder()
         .shortDescription("Die Methode canvasFromJSONObject(JSONElement) der Klasse LoadCanvasHandler funktioniert vollständig korrekt")
@@ -327,6 +369,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testCanvasFromJSONObjectSuccess", String.class, Integer.class, Integer.class, Integer.class, String.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testCanvasFromJSONElementNull")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testCanvasFromJSONElementInvalidFormat")))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
@@ -339,6 +383,8 @@ public class H12_RubricProvider implements RubricProvider {
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testLoadSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testLoadException", String.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H5_5_LoadCanvasHandlerTest.class.getDeclaredMethod("testLoadInvalidFileName", String.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
             .build())
         .build();
 
