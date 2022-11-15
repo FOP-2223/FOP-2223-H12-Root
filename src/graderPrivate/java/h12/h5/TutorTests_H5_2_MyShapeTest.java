@@ -4,6 +4,7 @@ import h12.exceptions.JSONParseException;
 import h12.gui.shapes.*;
 import h12.json.JSONObject;
 import h12.json.JSONString;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -127,6 +128,11 @@ public class TutorTests_H5_2_MyShapeTest {
             assertEquals("An exception occurred while trying to parse a JSON file. Invalid MyShape format!",
                 exc.getMessage(), context, TR -> "The thrown exception does not contain the correct message");
         }
+    }
+
+    @AfterEach
+    public void resetJSONToShapeConverter() {
+        MyShape.setJsonToShapeConverter(new JSONToShapeConverter());
     }
 
 }
