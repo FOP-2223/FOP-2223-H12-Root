@@ -98,6 +98,6 @@ public interface JSONElement {
      * @throws NoSuchElementException        If this {@link JSONElement} is a {@link JSONObject} but does not contain a {@link h12.json.JSONObject.JSONObjectEntry} that matches the given identifier.
      */
     default JSONElement getValueOf(String identifier) throws UnsupportedOperationException, NoSuchElementException {
-        throw new UnsupportedOperationException("This JSON Element does not support the operation getEntry(String).");
+        throw new UnsupportedOperationException("This JSON Element does not support the operation getValueOf(String).");
     }
 }
