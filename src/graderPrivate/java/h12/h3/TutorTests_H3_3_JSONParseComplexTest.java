@@ -1,5 +1,6 @@
 package h12.h3;
 
+import h12.TutorResourceIOFactory;
 import h12.ioFactory.ResourceIOFactory;
 import h12.json.*;
 import h12.json.parser.implementation.node.JSONElementNodeParser;
@@ -23,7 +24,7 @@ public class TutorTests_H3_3_JSONParseComplexTest {
 
         String resourceName = "h12/h3/JSONParserComplexTest.json";
 
-        try (LookaheadReader reader = new LookaheadReader(new ResourceIOFactory(getClass().getClassLoader()).createReader(resourceName))) {
+        try (LookaheadReader reader = new LookaheadReader(new TutorResourceIOFactory().createReader(resourceName))) {
             JSONElementNodeParser elementNodeParser = new JSONElementNodeParser(reader);
 
             JSONElement actual = elementNodeParser.parse();

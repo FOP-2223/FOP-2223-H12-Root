@@ -1,5 +1,6 @@
 package h12.h1;
 
+import h12.TutorResourceIOFactory;
 import h12.ioFactory.FileSystemIOFactory;
 import h12.ioFactory.ResourceIOFactory;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ public class TutorTests_H1_1_FileSystemIOFactoryTest {
             writer.write("Hello World!");
         }
 
-        try (BufferedReader reader = new ResourceIOFactory(classLoader).createReader(resourceName)) {
+        try (BufferedReader reader = new TutorResourceIOFactory().createReader(resourceName)) {
             assertEquals("Hello World!", reader.readLine(), context, TR ->
                 "The BufferedWriter did not write the content to the correct file");
         }
