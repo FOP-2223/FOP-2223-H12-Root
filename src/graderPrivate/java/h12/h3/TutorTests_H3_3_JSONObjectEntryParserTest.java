@@ -26,8 +26,14 @@ public class TutorTests_H3_3_JSONObjectEntryParserTest extends TutorTests_JSONPa
             List.of(k1, JSONNumber.of(v1)),
             extension,
             element -> List.of(((JSONObjectEntry) element).getIdentifier(), ((JSONObjectEntry) element).getValue()),
-            elementNodeParser -> mockStringParser(elementNodeParser, new String[]{k1}),
-            elementNodeParser -> verify(elementNodeParser.getStringParser(), times(1)).parse());
+            elementNodeParser -> {
+                mockStringParser(elementNodeParser, new String[]{k1});
+                mockNumberParser(elementNodeParser, new Integer[]{v1});
+            },
+            elementNodeParser -> {
+                verify(elementNodeParser.getStringParser(), times(1)).parse();
+                verify(elementNodeParser.getNumberParser(), times(1)).parse();
+            });
     }
 
     @ParameterizedTest
