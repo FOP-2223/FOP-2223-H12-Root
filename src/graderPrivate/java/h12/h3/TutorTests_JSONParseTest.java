@@ -98,7 +98,7 @@ public class TutorTests_JSONParseTest {
         if (mocker != null) mocker.accept(elementParser);
 
         assertThrows(expected, parser::parse, context,
-            TR -> "The method parse() did not throw an exception when given an invalid input");
+            TR -> "The method parse() did not throw the correct exception when given an invalid input");
     }
 
     protected void mockNumberParser(JSONElementNodeParser elementNodeParser, Integer[] integers) {
