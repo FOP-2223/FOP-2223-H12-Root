@@ -56,7 +56,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H2_1 = Criterion.builder()
-        .shortDescription("Die Methode write(BufferedWriter, int) der Klassen JSONNumberNode, JSONConstantNode und JSONStringNode funktionieren vollständig korrekt")
+        .shortDescription("Die Methode write(BufferedWriter, int) der Klassen JSONNumberNode, JSONConstantNode und JSONStringNode funktionieren vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONNumberTest.class.getDeclaredMethod("testWriteJSONInteger", Integer.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONNumberTest.class.getDeclaredMethod("testWriteJSONDouble", Double.class)))
@@ -96,7 +96,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_1_1 = Criterion.builder()
-        .shortDescription("Die Methoden skipIndentation() und peek() der Klasse JSONElementNodeParser funktionieren volständig korrekt.")
+        .shortDescription("Die Methoden skipIndentation() und peek() der Klasse JSONElementNodeParser funktionieren vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testSkipIndentation", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testSkipIndentationEmpty")))
@@ -108,7 +108,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_1_2 = Criterion.builder()
-        .shortDescription("Die Methoden acceptIt() und accept(char) der Klasse JSONElementNodeParser funktionieren volständig korrekt.")
+        .shortDescription("Die Methoden acceptIt() und accept(char) der Klasse JSONElementNodeParser funktionieren vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testAcceptIt", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testAcceptItEmpty")))
@@ -120,7 +120,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_1_3 = Criterion.builder()
-        .shortDescription("Die Methode checkEndOfFile() der Klasse JSONElementNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode checkEndOfFile() der Klasse JSONElementNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testCheckEndOfFileSuccess")))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testCheckEndOfFileException")))
@@ -130,7 +130,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_1_4 = Criterion.builder()
-        .shortDescription("Die Methode readUntil() der Klasse JSONElementNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode readUntil() der Klasse JSONElementNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testReadUntil", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testReadUntilException")))
@@ -145,7 +145,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_2_1 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONElementNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONElementNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testParseArray", Integer.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_1_H3_2_JSONElementNodeParserTest.class.getDeclaredMethod("testParseObject", String.class, Integer.class)))
@@ -164,7 +164,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_3_1 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONNumberNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONNumberNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONNumberNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONNumberNodeParserTest.class.getDeclaredMethod("testParseException", String.class)))
@@ -174,7 +174,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_3_2 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONConstantNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONConstantNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONConstantNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONConstantNodeParserTest.class.getDeclaredMethod("testParseException", String.class)))
@@ -184,7 +184,7 @@ public class H12_RubricProvider implements RubricProvider {
         .build();
 
     private static final Criterion H3_3_3 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONObjectEntryNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONObjectEntryNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectEntryParserTest.class.getDeclaredMethod("testParseSuccess", String.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectEntryParserTest.class.getDeclaredMethod("testParseException", String.class, Integer.class)))
@@ -197,7 +197,7 @@ public class H12_RubricProvider implements RubricProvider {
         () -> TutorTests_H3_3_JSONObjectNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class, Integer.class, String.class, Integer.class, String.class, Integer.class, String.class));
 
     private static final Criterion H3_3_5 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONObjectNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONObjectNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectNodeParserTest.class.getDeclaredMethod("testParseSuccess", String.class, Integer.class, String.class, Integer.class, String.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONObjectNodeParserTest.class.getDeclaredMethod("testParseException", String.class, Integer.class, String.class, Integer.class, String.class, Integer.class)))
@@ -210,7 +210,7 @@ public class H12_RubricProvider implements RubricProvider {
         () -> TutorTests_H3_3_JSONArrayNodeParserTest.class.getDeclaredMethod("testParseSuccess", Integer.class, Integer.class, Integer.class, String.class));
 
     private static final Criterion H3_3_7 = Criterion.builder()
-        .shortDescription("Die Methode parse() der Klasse JSONArrayNodeParser funktioniert volständig korrekt.")
+        .shortDescription("Die Methode parse() der Klasse JSONArrayNodeParser funktioniert vollständigändig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONArrayNodeParserTest.class.getDeclaredMethod("testParseSuccess", Integer.class, Integer.class, Integer.class, String.class)))
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H3_3_JSONArrayNodeParserTest.class.getDeclaredMethod("testParseException", Integer.class, Integer.class, Integer.class)))
