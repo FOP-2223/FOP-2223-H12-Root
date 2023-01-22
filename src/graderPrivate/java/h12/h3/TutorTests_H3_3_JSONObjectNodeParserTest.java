@@ -5,6 +5,7 @@ import h12.exceptions.TrailingCommaException;
 import h12.exceptions.UnexpectedCharacterException;
 import h12.json.JSONElement;
 import h12.json.JSONNumber;
+import h12.json.parser.implementation.node.JSONArrayNodeParser;
 import h12.json.parser.implementation.node.JSONObjectNodeParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -47,8 +48,16 @@ public class TutorTests_H3_3_JSONObjectNodeParserTest extends TutorTests_JSONPar
             .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser ->
             mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}));
 
+        //missing closing bracket, no elements
+        testParseException(BadFileEndingException.class, JSONArrayNodeParser::new, "[");
+
         //trailing comma
         testParseException(TrailingCommaException.class, JSONObjectNodeParser::new, "{\"%s\": %d, \"%s\": %d, \"%s\": %d,}"
+            .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser ->
+            mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}));
+
+        //missing comma
+        testParseException(UnexpectedCharacterException.class, JSONObjectNodeParser::new, "{\"%s\": %d, \"%s\": %d \"%s\": %d}"
             .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser ->
             mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}));
     }

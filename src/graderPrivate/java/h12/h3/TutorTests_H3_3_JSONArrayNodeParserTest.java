@@ -41,8 +41,15 @@ public class TutorTests_H3_3_JSONArrayNodeParserTest extends TutorTests_JSONPars
         testParseException(BadFileEndingException.class, JSONArrayNodeParser::new, "[%d, %d, %d".formatted(v1, v2, v3),
             elementNodeParser -> mockNumberParser(elementNodeParser, new Integer[]{v1, v2, v3}));
 
-        //trialing comma
+        //missing closing bracket, no elements
+        testParseException(BadFileEndingException.class, JSONArrayNodeParser::new, "[");
+
+        //trailing comma
         testParseException(TrailingCommaException.class, JSONArrayNodeParser::new, "[%d, %d, %d,]".formatted(v1, v2, v3),
+            elementNodeParser -> mockNumberParser(elementNodeParser, new Integer[]{v1, v2, v3}));
+
+        //missing comma
+        testParseException(UnexpectedCharacterException.class, JSONArrayNodeParser::new, "[%d, %d %d]".formatted(v1, v2, v3),
             elementNodeParser -> mockNumberParser(elementNodeParser, new Integer[]{v1, v2, v3}));
     }
 
