@@ -22,7 +22,7 @@ public class TutorTests_H3_3_JSONParseComplexTest {
         Context context = new BasicContext.Builder.Factory().builder().property("input", "complex, nested json file")
             .subject("JSONElementNodeParser#parse()").build();
 
-        String resourceName = "h12/h3/JSONParserComplexTest.json";
+        String resourceName = "h3/JSONParserComplexTest.json";
 
         try (LookaheadReader reader = new LookaheadReader(new TutorResourceIOFactory().createReader(resourceName))) {
             JSONElementNodeParser elementNodeParser = new JSONElementNodeParser(reader);
