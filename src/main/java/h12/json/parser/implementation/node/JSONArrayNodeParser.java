@@ -60,8 +60,8 @@ public class JSONArrayNodeParser implements JSONNodeParser {
 
             list.add(parsed);
 
-            if (parser.peek() == ',') {
-                parser.acceptIt();
+            if (parser.peek() != ']') {
+                parser.accept(',');
 
                 if (parser.peek() == ']') {
                     throw new TrailingCommaException();
