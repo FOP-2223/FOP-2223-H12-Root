@@ -51,7 +51,7 @@ public abstract class MyShape {
                 default -> throw new JSONParseException("Invalid shape type: %s!".formatted(name));
             };
         } catch (UnsupportedOperationException | NoSuchElementException exc) {
-            throw new JSONParseException("Invalid MyShape format!");
+            throw new JSONParseException(exc.getMessage());
         }
     }
 

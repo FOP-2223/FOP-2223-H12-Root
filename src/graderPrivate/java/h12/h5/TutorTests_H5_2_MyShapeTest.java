@@ -108,7 +108,7 @@ public class TutorTests_H5_2_MyShapeTest {
         try {
             MyShape.fromJSON(input);
         } catch (JSONParseException exc) {
-            assertEquals("An exception occurred while trying to parse a JSON file. Invalid MyShape format!",
+            assertEquals("An exception occurred while trying to parse a JSON file. No entry associated with the key name exists",
                 exc.getMessage(), context, TR -> "The thrown exception does not contain the correct message");
         }
 
