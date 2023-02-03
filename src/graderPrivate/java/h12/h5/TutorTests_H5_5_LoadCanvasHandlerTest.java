@@ -91,8 +91,13 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
         try {
             loadCanvasHandler.canvasFromJSONElement(null);
         } catch (JSONParseException exc) {
-            assertEquals("An exception occurred while trying to parse a JSON file. The given file is empty!", exc.getMessage(),
-                context, TR -> "The thrown exception does not contain the correct message");
+            String expected1 = "An exception occurred while trying to parse a JSON file. The given file is empty!";
+            String expected2 = "An exception occurred while trying to parse a JSON file. The given File is empty!"; //typo from sheet
+
+            if (!expected1.equals(exc.getMessage()) && !expected2.equals(exc.getMessage())) {
+                assertEquals(expected1, exc.getMessage(),
+                    context, TR -> "The thrown exception does not contain the correct message");
+            }
         }
     }
 
