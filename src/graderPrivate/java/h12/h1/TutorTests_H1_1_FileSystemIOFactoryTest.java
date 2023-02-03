@@ -1,62 +1,74 @@
 package h12.h1;
 
-import h12.TutorResourceIOFactory;
 import h12.ioFactory.FileSystemIOFactory;
-import h12.ioFactory.ResourceIOFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
+import org.sourcegrade.jagr.api.testing.extension.JagrExecutionCondition;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import java.io.*;
-import java.util.Objects;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertNotNull;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 
 @TestForSubmission()
 public class TutorTests_H1_1_FileSystemIOFactoryTest {
 
     @Test
-    public void testCreateBufferedReader() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder().property("file content", "\"Hello World!\"")
-            .subject("FileSystemIOFactory#createReader(String)").build();
+    @ExtendWith(JagrExecutionCondition.class)
+    public void testFileSystemIOFactoryReader() throws IOException {
+        String resourceName = "test.txt";
+        String expected = "Hello, World!";
+        Context context = contextBuilder()
+            .add("ressourceName", resourceName)
+            .add("content", expected)
+            .subject("FileSystemIOFactory#createReader(String)")
+            .build();
 
-        String resourceName = "h12/h1/CreateReaderTest.txt";
-        File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(resourceName)).getFile());
-
-        try (BufferedReader reader = new FileSystemIOFactory().createReader(file.getAbsolutePath())) {
-            assertNotNull(reader, context, TR -> "The methode returned null");
-
-            assertEquals("Hello World!", reader.readLine(), context, TR ->
-                "The BufferedReader contain the correct content");
-
-            assertEquals(-1, reader.read(), context, TR ->
-                "The BufferedReader did contain the correct content");
+        final FileSystemIOFactory fileSystemIOFactory = new FileSystemIOFactory();
+        for (int i = 0; i < 10; i++) {
+            TutorBufferedReader.reset0();
+            TutorFileReader.reset0();
+            TutorFileReader.DELEGATE_SUPPLIER = () -> new StringReader(expected + "\n");
+            try (BufferedReader br = fileSystemIOFactory.createReader(resourceName)) {
+                assertEquals(expected, br.readLine(), context,
+                    TR -> "The returned BufferedReader did return the correct content");
+            }
+            assertEquals(resourceName, TutorFileReader.FILE_NAME, context,
+                TR -> "The FileReader did not get called with the correct resourceName");
+            assertEquals(TutorBufferedReader.IN, TutorFileReader.INSTANCE, context,
+                TR -> "The BufferedReader wasn't created with the correct FileReader");
         }
     }
 
     @Test
-    public void testCreateBufferedWriter() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder().property("file content", "\"Hello World!\"")
-            .subject("FileSystemIOFactory#createReader(String)").build();
+    @ExtendWith(JagrExecutionCondition.class)
+    public void testFileSystemIOFactoryWriter() throws IOException {
+        String resourceName = "test.txt";
+        String expected = "Hello, World!";
+        Context context = contextBuilder()
+            .add("ressourceName", resourceName)
+            .add("content", expected)
+            .subject("FileSystemIOFactory#createWriter(String)")
+            .build();
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        String resourceName = "h12/h1/CreateWriterTest.txt";
-        File file = new File(Objects.requireNonNull(classLoader.getResource(resourceName)).getFile());
-
-        //delete contents of File
-        new PrintWriter(file.getAbsolutePath()).close();
-
-        try (BufferedWriter writer = new FileSystemIOFactory().createWriter(file.getAbsolutePath())) {
-            assertNotNull(writer, context, TR -> "The methode returned null");
-            writer.write("Hello World!");
-        }
-
-        try (BufferedReader reader = new TutorResourceIOFactory().createReader(resourceName)) {
-            assertEquals("Hello World!", reader.readLine(), context, TR ->
-                "The BufferedWriter did not write the content to the correct file");
+        final FileSystemIOFactory fileSystemIOFactory = new FileSystemIOFactory();
+        for (int i = 0; i < 10; i++) {
+            TutorBufferedWriter.reset0();
+            TutorFileWriter.reset0();
+            final StringWriter stringWriter = new StringWriter();
+            TutorFileWriter.FUNCTIONAL_WRITE = stringWriter::write;
+            try (BufferedWriter bw = fileSystemIOFactory.createWriter(resourceName)) {
+                bw.write(expected);
+            }
+            assertEquals(expected, stringWriter.toString(), context,
+                TR -> "The returned BufferedWriter did not write the correct content into the file");
+            assertEquals(resourceName, TutorFileWriter.FILE_NAME, context,
+                TR -> "The FileWriter did not get called with the correct resourceName");
+            assertEquals(TutorBufferedWriter.OUT, TutorFileWriter.INSTANCE, context,
+                TR ->  "The BufferedWriter wasn't created with the correct FileWriter");
         }
     }
-
 }

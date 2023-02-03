@@ -1,5 +1,6 @@
 package h12;
 
+import h12.h1.FileSystemIOFactoryTransformer;
 import h12.h1.TutorTests_H1_1_FileSystemIOFactoryTest;
 import h12.h1.TutorTests_H1_2_LookaheadReaderTest;
 import h12.h2.*;
@@ -8,6 +9,7 @@ import h12.h4.TutorTests_H4_1_JSONParserTest;
 import h12.h4.TutorTests_H4_2_JSONTest;
 import h12.h5.*;
 import org.sourcegrade.jagr.api.rubric.*;
+import org.sourcegrade.jagr.api.testing.RubricConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -28,8 +30,8 @@ public class H12_RubricProvider implements RubricProvider {
     private static final Criterion H1_1 = Criterion.builder()
         .shortDescription("Die Klasse FileSystemIOFactory funktioniert vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
-            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testCreateBufferedReader")))
-            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testCreateBufferedWriter")))
+            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testFileSystemIOFactoryReader")))
+            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H1_1_FileSystemIOFactoryTest.class.getDeclaredMethod("testFileSystemIOFactoryWriter")))
             .pointsFailedMin()
             .pointsPassedMax()
             .build())
@@ -406,5 +408,10 @@ public class H12_RubricProvider implements RubricProvider {
     @Override
     public Rubric getRubric() {
         return RUBRIC;
+    }
+
+    @Override
+    public void configure(RubricConfiguration configuration) {
+        configuration.addTransformer(new FileSystemIOFactoryTransformer());
     }
 }
