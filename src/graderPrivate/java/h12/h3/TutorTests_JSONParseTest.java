@@ -3,27 +3,22 @@ package h12.h3;
 import h12.exceptions.BadFileEndingException;
 import h12.exceptions.InvalidNumberException;
 import h12.exceptions.JSONParseException;
-import h12.json.JSONElement;
-import h12.json.JSONNumber;
-import h12.json.JSONString;
-import h12.json.LookaheadReader;
+import h12.json.*;
 import h12.json.parser.implementation.node.*;
-import org.junit.jupiter.api.function.ThrowingConsumer;
+import org.mockito.exceptions.base.MockitoAssertionError;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static h12.json.JSONObject.JSONObjectEntry;
 import static org.mockito.Mockito.*;
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
-@SuppressWarnings("Duplicates")
 public class TutorTests_JSONParseTest {
 
     public LookaheadReader createLookaheadReader(String input) throws IOException {
@@ -55,29 +50,29 @@ public class TutorTests_JSONParseTest {
                                      String expectedContent,
                                      Function<JSONElement, T> actualFunction,
                                      Consumer<JSONElementNodeParser> mocker,
-                                     ThrowingConsumer<JSONElementNodeParser> verifier) throws Throwable {
+                                     BiConsumer<JSONElementNodeParser, Context> verifier) throws Throwable {
 
         LookaheadReader reader = createLookaheadReader(input);
         JSONElementNodeParser elementParser = createJSONElementNodeParser(reader);
         JSONNodeParser parser = parserCreator.apply(elementParser);
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", input)
             .subject(parser.getClass().getSimpleName() + "#parse()")
             .build();
 
         if (mocker != null) mocker.accept(elementParser);
 
-        JSONElement actual = parser.parse();
+        JSONElement actual = callObject(parser::parse, context, TR -> "Unexpected exception was thrown");
 
-        assertNotNull(actual, context, TR -> "The method returned null");
+        assertNotNull(actual, context, TR -> "Method returned null");
 
         assertEquals(expected, actualFunction.apply(actual), context,
             TR -> "The returned JSONElement does not contain the expected value");
 
         assertEquals(expectedContent, getContent(reader), context,
-            TR -> "The method did not read the correct amount of character");
+            TR -> "Method did not read the correct amount of character");
 
-        if (verifier != null) verifier.accept(elementParser);
+        if (verifier != null) verifier.accept(elementParser, context);
     }
 
     public void testParseException(Class<? extends Exception> expected, Function<JSONElementNodeParser, JSONNodeParser> parserCreator,
@@ -90,15 +85,41 @@ public class TutorTests_JSONParseTest {
         LookaheadReader reader = createLookaheadReader(input);
         JSONElementNodeParser elementParser = createJSONElementNodeParser(reader);
         JSONNodeParser parser = parserCreator.apply(elementParser);
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", input)
             .subject(parser.getClass().getSimpleName())
             .build();
 
         if (mocker != null) mocker.accept(elementParser);
 
         assertThrows(expected, parser::parse, context,
-            TR -> "The method parse() did not throw the correct exception when given an invalid input");
+            TR -> "Method parse() did not throw the correct exception when given an invalid input");
+    }
+
+    public void testParseExceptionWithMessage(Class<? extends Exception> expected, Function<JSONElementNodeParser, JSONNodeParser> parserCreator,
+                                   String input, Consumer<JSONElementNodeParser> mocker, String... expectedMessages) throws IOException {
+        testParseException(expected, parserCreator, input, mocker);
+
+        LookaheadReader reader = createLookaheadReader(input);
+        JSONElementNodeParser elementParser = createJSONElementNodeParser(reader);
+        JSONNodeParser parser = parserCreator.apply(elementParser);
+
+        Context context = contextBuilder()
+            .add("input", input)
+            .subject(parser.getClass().getSimpleName())
+            .build();
+
+        try {
+            parser.parse();
+        } catch (JSONParseException e) {
+            for (String expectedMessage : expectedMessages) {
+                if (expectedMessage.equals(e.getMessage())) {
+                    return;
+                }
+            }
+            assertEquals(String.join(" \\<b\\>or\\</b\\> ", expectedMessages), e.getMessage(), context,
+                TR -> "The message of the thrown exception is not correct");
+        }
     }
 
     protected void mockNumberParser(JSONElementNodeParser elementNodeParser, Integer[] integers) {
@@ -169,7 +190,7 @@ public class TutorTests_JSONParseTest {
                 for (String key : keys) {
                     if (key.startsWith(Character.toString(read))) {
                         for (int j = 0; j < 4; j++) reader.read(); // read: ": 1
-                        return JSONObjectEntry.of(key, JSONNumber.of(values[i]));
+                        return JSONObject.JSONObjectEntry.of(key, JSONNumber.of(values[i]));
                     }
                     i++;
                 }
@@ -181,5 +202,34 @@ public class TutorTests_JSONParseTest {
         }
 
         elementNodeParser.setObjectEntryParser(objectEntryParser);
+    }
+
+    protected BiConsumer<JSONElementNodeParser, Context> createElementParserVerifier(int count) {
+        return (jsonElementNodeParser, context) -> {
+            try {
+                verify(jsonElementNodeParser, times(count)).parse();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (MockitoAssertionError e) {
+                fail(context, TR -> "Expected the method parse of class JSONElementNodeParser to be called exactly " + count + "times but it wasn't"
+                    + "\n Original message: " + e.getMessage());
+            }
+        };
+    }
+
+    protected BiConsumer<JSONElementNodeParser, Context> createNodeParserVerifier(
+        int count, Function<JSONElementNodeParser,
+        JSONNodeParser> parserFunction,
+        String parser) {
+        return (jsonElementNodeParser, context) -> {
+            try {
+                verify(parserFunction.apply(jsonElementNodeParser), times(count)).parse();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (MockitoAssertionError e) {
+                fail(context, TR -> "Expected the method parse of class " + parser + " to be called exactly " + count + "times but it wasn't"
+                    + "\n Original message: " + e.getMessage());
+            }
+        };
     }
 }

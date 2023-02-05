@@ -10,7 +10,7 @@ import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
 import java.io.IOException;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H3_3_JSONConstantNodeParserTest extends TutorTests_JSONParseTest {
 
     @ParameterizedTest

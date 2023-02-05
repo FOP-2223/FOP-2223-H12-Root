@@ -6,12 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H2_WriteJSONArrayTest extends TutorTests_WriteJSONTest {
 
     @ParameterizedTest
@@ -22,10 +17,7 @@ public class TutorTests_H2_WriteJSONArrayTest extends TutorTests_WriteJSONTest {
         JSONNumberNode mockedJSONNumber3 = createMockedJSONNumber(v3);
         JSONArray array = JSONArray.of(mockedJSONNumber1, mockedJSONNumber2, mockedJSONNumber3);
         String expected = "[\n    %d,\n    %d,\n    %d\n  ]".formatted(v1, v2, v3);
-        testWriteJSONNode(array, expected, 1, element -> {
-            verify(mockedJSONNumber1, times(1)).write(any(), anyInt());
-            verify(mockedJSONNumber2, times(1)).write(any(), anyInt());
-            verify(mockedJSONNumber3, times(1)).write(any(), anyInt());
-        });
+        testWriteJSONNode(array, expected, 1, createVerifier(mockedJSONNumber1, 1)
+            .andThen(createVerifier(mockedJSONNumber2, 1).andThen(createVerifier(mockedJSONNumber3, 1))));
     }
 }

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -22,13 +21,13 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.*;
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H4_2_JSONTest {
 
     @Test
     public void testParseSuccess() throws NoSuchFieldException, IllegalAccessException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "1")
+        Context context = contextBuilder()
+            .add("input", "1")
             .subject("JSON#parse()")
             .build();
 
@@ -47,7 +46,7 @@ public class TutorTests_H4_2_JSONTest {
         ArgumentCaptor<LookaheadReader> argumentCaptor = ArgumentCaptor.forClass(LookaheadReader.class);
         when(parserFactory.createParser(argumentCaptor.capture())).thenReturn(parser);
 
-        JSONElement actual = json.parse("test.json");
+        JSONElement actual = callObject(() -> json.parse("test.json"), context, TR -> "Unexpected exception was thrown");
 
         LookaheadReader actualReader = argumentCaptor.getValue();
         Field readerField = LookaheadReader.class.getDeclaredField("reader");
@@ -60,13 +59,13 @@ public class TutorTests_H4_2_JSONTest {
         assertTrue(actualReader.isClosed(), context,
             TR -> "The created LookaheadReader hasn't been closed. Make sure you have used a try-with-resource block");
 
-        assertEquals(result, actual, context, TR -> "The method did not return the correct value");
+        assertEquals(result, actual, context, TR -> "Method did not return the correct value");
     }
 
     @Test
     public void testParseExceptionUnsupportedReading() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("ioFactory", "Does not support reading")
+        Context context = contextBuilder()
+            .add("ioFactory", "Does not support reading")
             .subject("JSON#parse()")
             .build();
 
@@ -74,7 +73,7 @@ public class TutorTests_H4_2_JSONTest {
         json.setIOFactory(new UnsupportedIOFactory());
 
         assertThrows(JSONParseException.class, () -> json.parse("test.json"), context,
-            TR -> "The method did not throw the correct exception when given an IOFactory that does not support reading");
+            TR -> "Method did not throw the correct exception when given an IOFactory that does not support reading");
 
         try {
             json.parse("test.json");
@@ -86,8 +85,8 @@ public class TutorTests_H4_2_JSONTest {
 
     @Test
     public void testParseIOException() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "invalid File")
+        Context context = contextBuilder()
+            .add("input", "invalid File")
             .subject("JSON#parse()")
             .build();
         String exceptionMessage = "An IOException occurred";
@@ -98,7 +97,7 @@ public class TutorTests_H4_2_JSONTest {
         json.setIOFactory(ioFactory);
 
         assertThrows(JSONParseException.class, () -> json.parse("test.json"), context,
-            TR -> "The method did not throw the correct exception when an IOException is thrown");
+            TR -> "Method did not throw the correct exception when an IOException is thrown");
 
         try {
             json.parse("test.json");
@@ -110,8 +109,8 @@ public class TutorTests_H4_2_JSONTest {
 
     @Test
     public void testWriteSuccess() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "1")
+        Context context = contextBuilder()
+            .add("input", "1")
             .subject("JSON#write(String, JSONElement)")
             .build();
 
@@ -125,16 +124,16 @@ public class TutorTests_H4_2_JSONTest {
         ArgumentCaptor<Integer> argumentCaptorIndentation = ArgumentCaptor.forClass(Integer.class);
         doNothing().when(input).write(argumentCaptorWriter.capture(), argumentCaptorIndentation.capture());
 
-        json.write("test.json", input);
+        call(() -> json.write("test.json", input), context, TR -> "Unexpected exception was thrown");
 
         BufferedWriter actualWriter = argumentCaptorWriter.getValue();
         Integer actualIndentation = argumentCaptorIndentation.getValue();
 
         assertEquals(ioFactory.getLastCreatedWriter(), actualWriter, context,
-            TR -> "The method write(BufferedWriter, int) wasn't invoked with a BufferedWriter created by the ioFactory");
+            TR -> "Method write(BufferedWriter, int) wasn't invoked with a BufferedWriter created by the ioFactory");
 
         assertEquals(0, actualIndentation, context,
-            TR -> "The method write(BufferedWriter, int) wasn't invoked with the correct indentation");
+            TR -> "Method write(BufferedWriter, int) wasn't invoked with the correct indentation");
 
         boolean isClosed;
         try {
@@ -149,8 +148,8 @@ public class TutorTests_H4_2_JSONTest {
 
     @Test
     public void testWriteExceptionUnsupportedWriting() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("ioFactory", "Does not support writing")
+        Context context = contextBuilder()
+            .add("ioFactory", "Does not support writing")
             .subject("JSON#write(String, JSONElement)")
             .build();
 
@@ -160,7 +159,7 @@ public class TutorTests_H4_2_JSONTest {
         json.setIOFactory(new UnsupportedIOFactory());
 
         assertThrows(JSONWriteException.class, () -> json.write("test.json", input), context,
-            TR -> "The method did not throw the correct exception when given an IOFactory that does not support writing");
+            TR -> "Method did not throw the correct exception when given an IOFactory that does not support writing");
 
         try {
             json.write("test.json", input);
@@ -172,8 +171,8 @@ public class TutorTests_H4_2_JSONTest {
 
     @Test
     public void testWriteIOException() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "invalid File")
+        Context context = contextBuilder()
+            .add("input", "invalid File")
             .subject("JSON#write(String, JSONElement)")
             .build();
         String exceptionMessage = "An IOException occurred";
@@ -185,7 +184,7 @@ public class TutorTests_H4_2_JSONTest {
         json.setIOFactory(ioFactory);
 
         assertThrows(JSONWriteException.class, () -> json.write("test.json", input), context,
-            TR -> "The method did not throw the correct exception when an IOException is thrown");
+            TR -> "Method did not throw the correct exception when an IOException is thrown");
 
         try {
             json.write("test.json", input);

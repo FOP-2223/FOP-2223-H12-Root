@@ -8,12 +8,8 @@ import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
 import static h12.json.JSONObject.JSONObjectEntry;
 import static h12.json.implementation.node.JSONObjectNode.JSONObjectEntryNode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H2_WriteJSONObjectEntryTest extends TutorTests_WriteJSONTest {
 
     @ParameterizedTest
@@ -24,10 +20,8 @@ public class TutorTests_H2_WriteJSONObjectEntryTest extends TutorTests_WriteJSON
         JSONObjectEntry entry = new JSONObjectEntryNode(mockedJSONString, mockedJSONNumber);
         String expected = "\"" + key + "\": " + value;
 
-        testWriteJSONNode(entry, expected, 1, element -> {
-            verify(mockedJSONString, times(1)).write(any(), anyInt());
-            verify(mockedJSONNumber, times(1)).write(any(), anyInt());
-        });
+        testWriteJSONNode(entry, expected, 1, createVerifier(mockedJSONString, 1)
+            .andThen(createVerifier(mockedJSONNumber, 1)));
     }
 
 }

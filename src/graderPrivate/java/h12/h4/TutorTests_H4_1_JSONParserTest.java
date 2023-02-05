@@ -6,45 +6,61 @@ import h12.json.implementation.node.JSONNumberNode;
 import h12.json.parser.JSONParser;
 import h12.json.parser.implementation.node.JSONElementNodeParser;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.exceptions.base.MockitoAssertionError;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import java.io.IOException;
 
 import static org.mockito.Mockito.*;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertThrows;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H4_1_JSONParserTest {
 
     @Test
     public void testParseSuccess() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "1")
+        Context context = contextBuilder()
+            .add("input", "1")
             .subject("JSONParser#parse()")
             .build();
 
         JSONElement result = new JSONNumberNode(1);
 
         JSONElementNodeParser elementNodeParser = mock(JSONElementNodeParser.class);
+        InOrder inOrder = inOrder(elementNodeParser);
 
         when(elementNodeParser.parse()).thenReturn(result);
 
         JSONParser parser = new JSONParser(elementNodeParser);
-        JSONElement actual = parser.parse();
 
-        verify(elementNodeParser, times(1)).parse();
-        verify(elementNodeParser, times(1)).checkEndOfFile();
+        JSONElement actual = callObject(parser::parse, context, TR -> "Unexpected exception was thrown");
 
-        assertEquals(result, actual, context, TR -> "The methode did not return the expected value");
+        try {
+            verify(elementNodeParser, times(1)).parse();
+        } catch (MockitoAssertionError e) {
+            fail(context, TR -> "Expected method parse of class elementNodeParser to be called exactly once and before checkEndOfFile but it wasn't"
+                + "\n Original message: " + e.getMessage());
+        }
+
+        try {
+            verify(elementNodeParser, times(1)).checkEndOfFile();
+        } catch (MockitoAssertionError e) {
+            fail(context, TR -> "Expected method checkEndOfFile of class elementNodeParser to be called exactly once and after parse but it wasn't"
+                + "\n Original message: " + e.getMessage());
+        }
+
+        inOrder.verify(elementNodeParser, times(1)).parse();
+        inOrder.verify(elementNodeParser, times(1)).checkEndOfFile();
+
+        assertEquals(result, actual, context, TR -> "Method did not return the expected value");
     }
 
     @Test
     public void testParseIOException() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "Invalid File")
+        Context context = contextBuilder()
+            .add("input", "Invalid File")
             .subject("JSONParser#parse()")
             .build();
 
@@ -56,7 +72,7 @@ public class TutorTests_H4_1_JSONParserTest {
         JSONParser parser = new JSONParser(elementNodeParser);
 
         assertThrows(JSONParseException.class, parser::parse, context,
-            TR -> "The method did not the throw the correct exception when the JSONElementNodeParser throws an IOException");
+            TR -> "Method did not the throw the correct exception when the JSONElementNodeParser throws an IOException");
 
         try {
             parser.parse();

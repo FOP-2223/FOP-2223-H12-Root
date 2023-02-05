@@ -3,6 +3,7 @@ package h12.h3;
 import h12.exceptions.BadFileEndingException;
 import h12.exceptions.UnexpectedCharacterException;
 import h12.json.JSONNumber;
+import h12.json.parser.implementation.node.JSONElementNodeParser;
 import h12.json.parser.implementation.node.JSONObjectEntryNodeParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -12,10 +13,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static h12.json.JSONObject.JSONObjectEntry;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H3_3_JSONObjectEntryParserTest extends TutorTests_JSONParseTest {
 
     @ParameterizedTest
@@ -30,10 +29,8 @@ public class TutorTests_H3_3_JSONObjectEntryParserTest extends TutorTests_JSONPa
                 mockStringParser(elementNodeParser, new String[]{k1});
                 mockNumberParser(elementNodeParser, new Integer[]{v1});
             },
-            elementNodeParser -> {
-                verify(elementNodeParser.getStringParser(), times(1)).parse();
-                verify(elementNodeParser.getNumberParser(), times(1)).parse();
-            });
+            createNodeParserVerifier(1, JSONElementNodeParser::getStringParser, "JSONStringNodeParser")
+                .andThen(createElementParserVerifier(1)));
     }
 
     @ParameterizedTest

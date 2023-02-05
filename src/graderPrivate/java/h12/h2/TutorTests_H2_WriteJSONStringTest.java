@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H2_WriteJSONStringTest extends TutorTests_WriteJSONTest {
 
     @ParameterizedTest
@@ -15,7 +15,7 @@ public class TutorTests_H2_WriteJSONStringTest extends TutorTests_WriteJSONTest 
         JSONString string = new JSONStringNode(input);
         String expected = "\"" + input + "\"";
 
-        testWriteJSONNode(string, expected, 1, null);
+        testWriteJSONNode(string, expected, 1);
     }
 
 }

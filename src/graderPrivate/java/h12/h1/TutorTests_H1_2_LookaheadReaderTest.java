@@ -5,59 +5,65 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
+import org.tudalgo.algoutils.tutor.general.assertions.Context;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H1_2_LookaheadReaderTest {
 
     @ParameterizedTest
     @CsvSource("012345")
     public void testLookaheadReader(String input) throws IOException {
 
-        StringReader reader = new StringReader(input);
-        LookaheadReader lookaheadReader = new LookaheadReader(new BufferedReader(reader));
 
-        for (int i = 0; i < input.length() + 1; i++) {
-            int expected = i < input.length() ? input.charAt(i) : -1;
+        try (LookaheadReader lookaheadReader = new LookaheadReader(new BufferedReader(new StringReader(input)))) {
 
-            for (int j = 0; j < input.length() - i; j++) {
-                testPeek(lookaheadReader, expected, i, input);
+            for (int i = 0; i < input.length() + 1; i++) {
+                int expected = i < input.length() ? input.charAt(i) : -1;
+
+                for (int j = 0; j < input.length() - i; j++) {
+                    testPeek(lookaheadReader, expected, i, input);
+                }
+
+                testRead(lookaheadReader, expected, i, input);
             }
-
-            testRead(lookaheadReader, expected, i, input);
         }
 
-        lookaheadReader.close();
+        try (LookaheadReader lookaheadReader = new LookaheadReader(new BufferedReader(new StringReader(input)))) {
+
+            for (int i = 0; i < input.length() + 1; i++) {
+                int expected = i < input.length() ? input.charAt(i) : -1;
+                testRead(lookaheadReader, expected, i, input);
+            }
+        }
     }
 
     @Test
     public void testEmptyLookaheadReader() throws IOException {
         LookaheadReader lookaheadReader = new LookaheadReader(new BufferedReader(new StringReader("")));
 
+        testRead(lookaheadReader, -1, 0, "empty String");
         testPeek(lookaheadReader, -1, 0, "empty String");
         testRead(lookaheadReader, -1, 0, "empty String");
 
         lookaheadReader.close();
     }
 
-    private void testPeek(LookaheadReader reader, int expected, int amount, String input) throws IOException {
-        assertEquals(charToString(expected), charToString(reader.peek()),
-            new BasicContext.Builder.Factory().builder().property("inputSequence", input).subject("LookaheadReader#peek()").build(),
-            TR -> "The method did not return the correct value when read() has already been called %d times"
-                .formatted(amount));
+    private void testPeek(LookaheadReader reader, int expected, int amount, String input) {
+        Context context = contextBuilder().add("inputSequence", input).subject("LookaheadReader#peek()").build();
+        assertEquals(charToString(expected), charToString(callObject(reader::peek, context, TR -> "Unexpected exception was thrown")),
+            context, TR -> "Method did not return the correct value when read() has already been called %d times".formatted(amount));
     }
 
-    private void testRead(LookaheadReader reader, int expected, int amount, String input) throws IOException {
-        assertEquals(charToString(expected), charToString(reader.read()),
-            new BasicContext.Builder.Factory().builder().property("inputSequence", input).subject("LookaheadReader#read").build(),
-            TR -> "The method did not return the correct value when read() has already been called %d times"
-                .formatted(amount));
+    private void testRead(LookaheadReader reader, int expected, int amount, String input) {
+        Context context = contextBuilder().add("inputSequence", input).subject("LookaheadReader#read").build();
+        assertEquals(charToString(expected), charToString(callObject(reader::read, context, TR -> "Unexpected exception was thrown")),
+            context, TR -> "Method did not return the correct value when read() has already been called %d times".formatted(amount));
     }
 
     private String charToString(int integer) {

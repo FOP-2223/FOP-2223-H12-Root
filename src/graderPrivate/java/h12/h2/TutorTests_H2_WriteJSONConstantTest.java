@@ -6,7 +6,7 @@ import h12.json.implementation.node.JSONConstantNode;
 import org.junit.jupiter.api.Test;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H2_WriteJSONConstantTest extends TutorTests_WriteJSONTest {
 
     @Test
@@ -15,7 +15,7 @@ public class TutorTests_H2_WriteJSONConstantTest extends TutorTests_WriteJSONTes
             JSONConstant jsonConstant = new JSONConstantNode(constant);
             String expected = constant.getSpelling();
 
-            testWriteJSONNode(jsonConstant, expected, 1, null);
+            testWriteJSONNode(jsonConstant, expected, 1);
         }
     }
 

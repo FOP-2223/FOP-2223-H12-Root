@@ -12,19 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.exceptions.base.MockitoAssertionError;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
-import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import java.io.IOException;
 import java.util.List;
 
 import static h12.json.JSONObject.JSONObjectEntry;
 import static org.mockito.Mockito.*;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertThrows;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
-@TestForSubmission()
+@TestForSubmission
 public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_JSONParseTest {
 
     @ParameterizedTest
@@ -34,35 +33,35 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         input = "  \n \r\t   " + input + " "; //@CSVSource trims trailing whitespace
         String expectedContent = originalInput + " ";
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#skipIndentation()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
-            elementParser.skipIndentation();
+            call(elementParser::skipIndentation, context, TR -> "Unexpected exception was thrown");
             String actualContent = getContent(reader);
 
             assertEquals(expectedContent, actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
     @Test
     public void testSkipIndentationEmpty() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "empty")
+        Context context = contextBuilder()
+            .add("input", "\\<i\\>empty\\</i\\>")
             .subject("JSONElementNodeParser#skipIndentation()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader("")) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
-            elementParser.skipIndentation();
+            call(elementParser::skipIndentation, context, TR -> "Unexpected exception was thrown");
             String actualContent = getContent(reader);
 
             assertEquals("", actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
@@ -72,36 +71,36 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         String originalInput = input;
         input = "  \n" + input;
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#acceptIt()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
-            assertEquals(originalInput.charAt(0), (char) elementParser.acceptIt(), context,
-                TR -> "The method did not return the correct value");
+            assertEquals(originalInput.charAt(0), (char) callObject(elementParser::acceptIt, context,
+                    TR -> "Unexpected exception was thrown").intValue(), context, TR -> "The Method did not return the correct value");
 
             String actualContent = getContent(reader);
 
             assertEquals(originalInput.substring(1), actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
     @Test
     public void testAcceptItEmpty() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "empty")
+        Context context = contextBuilder()
+            .add("input", "\\<i\\>empty\\</i\\>")
             .subject("JSONElementNodeParser#acceptIt()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader("")) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
-            assertEquals(-1, elementParser.acceptIt(), context,
-                TR -> "The method did not return the correct value");
+            assertEquals(-1, callObject(elementParser::acceptIt, context, TR -> "Unexpected exception was thrown"), context,
+                TR -> "The Method did not return the correct value");
         }
     }
 
@@ -111,19 +110,19 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         String originalInput = input;
         input = "  \n" + input;
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
-            .property("expected", originalInput.charAt(0))
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
+            .add("expected", originalInput.charAt(0))
             .subject("JSONElementNodeParser#accept(char)")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
-            elementParser.accept(originalInput.charAt(0));
+            call(() -> elementParser.accept(originalInput.charAt(0)), context, TR -> "Unexpected exception was thrown");
             String actualContent = getContent(reader);
 
             assertEquals(originalInput.substring(1), actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
@@ -133,9 +132,9 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         String originalInput = input;
         input = "  \n" + (char) (input.charAt(0) + 1) + input.substring(1);
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
-            .property("expected", originalInput.charAt(0))
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
+            .add("expected", originalInput.charAt(0))
             .subject("JSONElementNodeParser#accept(char)")
             .build();
 
@@ -143,7 +142,7 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
             assertThrows(UnexpectedCharacterException.class, () -> elementParser.accept(originalInput.charAt(0)), context,
-                TR -> "The methode did not throw an UnexpectedCharacterException when the next char in the reader does not match the parameter");
+                TR -> "The Method did not throw an UnexpectedCharacterException when the next char in the reader does not match the parameter");
         }
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
@@ -162,54 +161,54 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         String originalInput = input;
         input = "  \n" + input;
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#peek()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
-            assertEquals(originalInput.charAt(0), (char) elementParser.peek(), context,
-                TR -> "The method did not return the correct value");
+            assertEquals(originalInput.charAt(0), (char) callObject(elementParser::peek, context,
+                    TR -> "Unexpected exception was thrown").intValue(), context, TR -> "The Method did not return the correct value");
 
             String actualContent = getContent(reader);
 
             assertEquals(originalInput, actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
     @Test
     public void testPeekEmpty() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "empty")
+        Context context = contextBuilder()
+            .add("input", "\\<i\\>empty\\</i\\>")
             .subject("JSONElementNodeParser#peek()")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader("")) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
-            assertEquals(-1, elementParser.peek(), context,
-                TR -> "The method did not return the correct value");
+            assertEquals(-1, callObject(elementParser::peek, context, TR -> "Unexpected exception was thrown"),
+                context, TR -> "The Method did not return the correct value");
         }
     }
 
     @Test
     public void testCheckEndOfFileSuccess() throws IOException {
         String input = "  ";
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "\"  \"")
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#checkEndOfFile(char)")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
-            elementParser.checkEndOfFile();
+            call(elementParser::checkEndOfFile, context, TR -> "Unexpected exception was thrown");
             String actualContent = getContent(reader);
 
             assertEquals("", actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
@@ -217,8 +216,8 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
     public void testCheckEndOfFileException() throws IOException {
         String input = "  \na";
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#checkEndOfFile(char)")
             .build();
 
@@ -226,7 +225,7 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
             assertThrows(BadFileEndingException.class, elementParser::checkEndOfFile, context,
-                TR -> "The methode did not throw an BadFileEndingException when the end of the file has not been reached");
+                TR -> "The Method did not throw an BadFileEndingException when the end of the file has not been reached");
         }
     }
 
@@ -239,28 +238,30 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         String end = "xyz";
         input = input + terminator + end;
 
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
+            .add("stopPredicate", "i -> i == 'T'")
             .subject("JSONElementNodeParser#readUntil(Predicate)")
             .build();
 
         try (LookaheadReader reader = createLookaheadReader(input)) {
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
-            assertEquals(expected, elementParser.readUntil(integer -> integer == terminator), context,
-                TR -> "The method did not return the correct value");
+            assertEquals(expected, callObject(() -> elementParser.readUntil(integer -> integer == terminator), context,
+                    TR -> "Unexpected exception was thrown"), context, TR -> "The Method did not return the correct value");
 
             String actualContent = getContent(reader);
 
             assertEquals(terminator + end, actualContent, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
         }
     }
 
     @Test
     public void testReadUntilException() throws IOException {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "empty")
+        Context context = contextBuilder()
+            .add("input", "\\<i\\>empty\\</i\\>")
+            .add("stopPredicate", "i -> i == 'T'")
             .subject("JSONElementNodeParser#readUntil(Predicate)")
             .build();
 
@@ -268,15 +269,17 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
             JSONElementNodeParser elementParser = new JSONElementNodeParser(reader);
 
             assertThrows(BadFileEndingException.class, () -> elementParser.readUntil(integer -> integer == 'T'), context,
-                TR -> "The method did not return the correct value");
+                TR -> "The Method did not return the correct value");
         }
     }
 
-    public void testParse(String input, ThrowingConsumer<JSONElementNodeParser> verifier, ThrowingConsumer<JSONElementNodeParser> overWriter, JSONElement expected) throws Throwable {
+    public void testParse(String input, ThrowingConsumer<JSONElementNodeParser> verifier,
+                          ThrowingConsumer<JSONElementNodeParser> overWriter,
+                          JSONElement expected) throws Throwable {
         String originalInput = input;
         input = "  \n" + input;
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", input)
+        Context context = contextBuilder()
+            .add("input", createInputString(input))
             .subject("JSONElementNodeParser#parse()")
             .build();
 
@@ -284,16 +287,22 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
             JSONElementNodeParser elementParser = createMockedJSONElementNodeParser(reader);
             overWriter.accept(elementParser);
 
-            JSONElement actual = elementParser.parse();
-
-            verifier.accept(elementParser);
+            JSONElement actual = callObject(elementParser::parse, context, TR -> "Unexpected exception was thrown");
 
             String content = getContent(reader);
             assertEquals(originalInput, content, context,
-                TR -> "The lookaheadReader does not contain the expected content after the methode has been called");
+                TR -> "The lookaheadReader does not contain the expected content after the method has been called");
 
             assertEquals(expected, actual, context,
-                TR -> "The methode did not return the correct value");
+                TR -> "The Method did not return the correct value");
+
+            try {
+                verifier.accept(elementParser);
+            } catch (MockitoAssertionError e) {
+                fail(context, TR -> "Expected the method parse() of class " + expected.getClass().getSimpleName()
+                    + "Parser to be called once but it did not get called or got called multiple times"
+                    + "\n Original message: " + e.getMessage());
+            }
         }
     }
 
@@ -389,6 +398,12 @@ public class TutorTests_H3_1_H3_2_JSONElementNodeParserTest extends TutorTests_J
         elementParser.setConstantParser(mock(JSONConstantNodeParser.class));
 
         return elementParser;
+    }
+
+    private String createInputString(String input) {
+        return "\\<span style=\"white-space: pre;\"\\>" +
+            input.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
+            + "\\</span\\>";
     }
 
 }
