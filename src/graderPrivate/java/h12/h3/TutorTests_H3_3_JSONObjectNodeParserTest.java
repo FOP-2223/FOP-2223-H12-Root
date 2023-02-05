@@ -28,7 +28,7 @@ public class TutorTests_H3_3_JSONObjectNodeParserTest extends TutorTests_JSONPar
             Set.of(JSONObjectEntry.of(k1, JSONNumber.of(v1)), JSONObjectEntry.of(k2, JSONNumber.of(v2)), JSONObjectEntry.of(k3, JSONNumber.of(v3))),
             extension,
             JSONElement::getObjectEntries,
-            elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+            this::mockObjectEntryParser,
             createNodeParserVerifier(3, JSONElementNodeParser::getObjectEntryParser, "JSONObjectEntryNodeParser"));
     }
 
@@ -38,21 +38,21 @@ public class TutorTests_H3_3_JSONObjectNodeParserTest extends TutorTests_JSONPar
 
         //missing opening bracket
         testParseExceptionWithMessage(UnexpectedCharacterException.class, JSONObjectNodeParser::new, "\"%s\": %d, \"%s\": %d, \"%s\": %d}"
-            .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+            .formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser,
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <{>, but was: <\">");
 
         //wrong opening bracket
         testParseExceptionWithMessage(UnexpectedCharacterException.class, JSONObjectNodeParser::new, "[\"%s\": %d, \"%s\": %d, \"%s\": %d}"
-                .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+                .formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser,
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <{>, but was: <[>");
 
         //missing closing bracket
         testParseException(BadFileEndingException.class, JSONObjectNodeParser::new, "{\"%s\": %d, \"%s\": %d, \"%s\": %d"
-            .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}));
+            .formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser);
 
         //wrong closing bracket
         testParseExceptionWithMessage(UnexpectedCharacterException.class, JSONObjectNodeParser::new, "{\"%s\": %d, \"%s\": %d, \"%s\": %d]"
-                .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+                .formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser,
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <,>, but was: <]>",
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <}>, but was: <]>");
 
@@ -61,17 +61,17 @@ public class TutorTests_H3_3_JSONObjectNodeParserTest extends TutorTests_JSONPar
 
         //trailing comma
         testParseException(TrailingCommaException.class, JSONObjectNodeParser::new, "{\"%s\": %d, \"%s\": %d, \"%s\": %d,}"
-            .formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}));
+            .formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser);
 
         //missing comma
         testParseExceptionWithMessage(UnexpectedCharacterException.class, JSONObjectNodeParser::new,
-            "{\"%s\": %d, \"%s\": %d \"%s\": %d}".formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+            "{\"%s\": %d, \"%s\": %d \"%s\": %d}".formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser,
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <,>, but was: <\">",
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <}>, but was: <\">");
 
         //wrong comma
         testParseExceptionWithMessage(UnexpectedCharacterException.class, JSONObjectNodeParser::new,
-            "{\"%s\": %d, \"%s\": %d; \"%s\": %d}".formatted(k1, v1, k2, v2, k3, v3), elementNodeParser -> mockObjectEntryParser(elementNodeParser, new String[]{k1, k2, k3}, new Integer[]{v1, v2, v3}),
+            "{\"%s\": %d, \"%s\": %d; \"%s\": %d}".formatted(k1, v1, k2, v2, k3, v3), this::mockObjectEntryParser,
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <,>, but was: <;>",
             "An exception occurred while trying to parse a JSON file. Received an unexpected character. Expected: <}>, but was: <;>");
     }

@@ -22,11 +22,11 @@ import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 public class TutorTests_JSONParseTest {
 
     public LookaheadReader createLookaheadReader(String input) throws IOException {
-        return new LookaheadReader(new BufferedReader(new StringReader(input)));
+        return spy(new TutorLookaheadReader(new BufferedReader(new StringReader(input))));
     }
 
     public JSONElementNodeParser createJSONElementNodeParser(LookaheadReader reader) {
-        return spy(new JSONElementNodeParser(reader));
+        return spy(new TutorJSONElementNodeParser(reader));
     }
 
     public String getContent(LookaheadReader reader) throws IOException {
@@ -104,6 +104,8 @@ public class TutorTests_JSONParseTest {
         JSONElementNodeParser elementParser = createJSONElementNodeParser(reader);
         JSONNodeParser parser = parserCreator.apply(elementParser);
 
+        if (mocker != null) mocker.accept(elementParser);
+
         Context context = contextBuilder()
             .add("input", input)
             .subject(parser.getClass().getSimpleName())
@@ -122,86 +124,20 @@ public class TutorTests_JSONParseTest {
         }
     }
 
-    protected void mockNumberParser(JSONElementNodeParser elementNodeParser, Integer[] integers) {
-        JSONNumberNodeParser numberParser = mock(JSONNumberNodeParser.class);
-        try {
-            when(numberParser.parse()).thenAnswer(invocation -> {
-                Field readerField = JSONElementNodeParser.class.getDeclaredField("reader");
-                readerField.setAccessible(true);
-                LookaheadReader reader = (LookaheadReader) readerField.get(elementNodeParser);
-                int read = reader.read();
-
-                for (Integer integer : integers) {
-                    if (Character.toString(read).equals(Integer.toString(integer))) return JSONNumber.of(integer);
-                }
-
-                throw new InvalidNumberException(Character.toString(read));
-            });
-        } catch (IOException exc) {
-            throw new JSONParseException(exc.getMessage());
-        }
-
+    protected void mockNumberParser(JSONElementNodeParser elementNodeParser) {
+        JSONNumberNodeParser numberParser = spy(new TutorNumberParser(elementNodeParser));
         elementNodeParser.setNumberParser(numberParser);
     }
 
-    @SuppressWarnings({"ignored", "ResultOfMethodCallIgnored"})
-    protected void mockStringParser(JSONElementNodeParser elementNodeParser, String[] strings) {
-        JSONStringNodeParser stringParser = mock(JSONStringNodeParser.class);
-        try {
-            when(stringParser.parse()).thenAnswer(invocation -> {
-                Field readerField = JSONElementNodeParser.class.getDeclaredField("reader");
-                readerField.setAccessible(true);
-                LookaheadReader reader = (LookaheadReader) readerField.get(elementNodeParser);
-                reader.read(); //quotation mark
-                int read = reader.read();
-
-                for (String string : strings) {
-                    if (read == string.charAt(0)) {
-                        reader.read(); //quotation mark
-                        return JSONString.of(string);
-                    }
-                }
-
-                throw new JSONParseException("invalid string");
-            });
-        } catch (IOException exc) {
-            throw new JSONParseException(exc.getMessage());
-        }
-
+    protected void mockStringParser(JSONElementNodeParser elementNodeParser) {
+        JSONStringNodeParser stringParser = spy(new JSONStringNodeParser(elementNodeParser));
         elementNodeParser.setStringParser(stringParser);
     }
 
-    @SuppressWarnings({"ignored", "ResultOfMethodCallIgnored"})
-    protected void mockObjectEntryParser(JSONElementNodeParser elementNodeParser, String[] keys, Integer[] values) {
-        JSONObjectEntryNodeParser objectEntryParser = mock(JSONObjectEntryNodeParser.class);
-        try {
-            when(objectEntryParser.parse()).thenAnswer(invocation -> {
-                Field readerField = JSONElementNodeParser.class.getDeclaredField("reader");
-                readerField.setAccessible(true);
-                LookaheadReader reader = (LookaheadReader) readerField.get(elementNodeParser);
-                reader.read(); //read quotation mark
-                int read = reader.read();
-
-                if (read == -1) {
-                    throw new BadFileEndingException();
-                }
-
-                int i = 0;
-                for (String key : keys) {
-                    if (key.startsWith(Character.toString(read))) {
-                        for (int j = 0; j < 4; j++) reader.read(); // read: ": 1
-                        return JSONObject.JSONObjectEntry.of(key, JSONNumber.of(values[i]));
-                    }
-                    i++;
-                }
-
-                throw new JSONParseException("Unknown JSON object entry");
-            });
-        } catch (IOException exc) {
-            throw new JSONParseException(exc.getMessage());
-        }
-
+    protected void mockObjectEntryParser(JSONElementNodeParser elementNodeParser) {
+        JSONObjectEntryNodeParser objectEntryParser = spy(new TutorObjectEntryParser(elementNodeParser));
         elementNodeParser.setObjectEntryParser(objectEntryParser);
+        mockNumberParser(elementNodeParser);
     }
 
     protected BiConsumer<JSONElementNodeParser, Context> createElementParserVerifier(int count) {

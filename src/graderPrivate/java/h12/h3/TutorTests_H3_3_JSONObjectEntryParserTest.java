@@ -26,8 +26,8 @@ public class TutorTests_H3_3_JSONObjectEntryParserTest extends TutorTests_JSONPa
             extension,
             element -> List.of(((JSONObjectEntry) element).getIdentifier(), ((JSONObjectEntry) element).getValue()),
             elementNodeParser -> {
-                mockStringParser(elementNodeParser, new String[]{k1});
-                mockNumberParser(elementNodeParser, new Integer[]{v1});
+                mockStringParser(elementNodeParser);
+                mockNumberParser(elementNodeParser);
             },
             createNodeParserVerifier(1, JSONElementNodeParser::getStringParser, "JSONStringNodeParser")
                 .andThen(createElementParserVerifier(1)));
