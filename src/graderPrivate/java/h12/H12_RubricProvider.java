@@ -73,28 +73,48 @@ public class H12_RubricProvider implements RubricProvider {
         () -> TutorTests_H2_WriteJSONObjectEntryTest.class.getDeclaredMethod("testWriteJSONObjectEntry", String.class, Integer.class));
 
     private static final Criterion H2_3 = Criterion.builder()
-        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONObjectNode funktioniert vollständig korrekt.")
+        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONObjectNode funktioniert ohne Einrückung vollständig korrekt.")
+        .grader(Grader.testAwareBuilder()
+            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONObjectTest.class.getDeclaredMethod("testWriteJSONObjectNoIndent", String.class, int.class, String.class, int.class, String.class, int.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
+            .build())
+        .maxPoints(1)
+        .build();
+
+    private static final Criterion H2_4 = Criterion.builder()
+        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONObjectNode funktioniert inklusive Einrückung vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONObjectTest.class.getDeclaredMethod("testWriteJSONObject", String.class, int.class, String.class, int.class, String.class, int.class, int.class)))
             .pointsFailedMin()
             .pointsPassedMax()
             .build())
-        .maxPoints(2)
+        .maxPoints(1)
         .build();
 
-    private static final Criterion H2_4 = Criterion.builder()
-        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONArrayNode funktioniert vollständig korrekt.")
+    private static final Criterion H2_5 = Criterion.builder()
+        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONArrayNode funktioniert ohne Einrückung vollständig korrekt.")
+        .grader(Grader.testAwareBuilder()
+            .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONArrayTest.class.getDeclaredMethod("testWriteJSONArrayNoIndent", int.class, int.class, int.class)))
+            .pointsFailedMin()
+            .pointsPassedMax()
+            .build())
+        .maxPoints(1)
+        .build();
+
+    private static final Criterion H2_6 = Criterion.builder()
+        .shortDescription("Die Methode write(BufferedWriter, int) der Klasse JSONArrayNode funktioniert inklusive Einrückung vollständig korrekt.")
         .grader(Grader.testAwareBuilder()
             .requirePass(JUnitTestRef.ofMethod(() -> TutorTests_H2_WriteJSONArrayTest.class.getDeclaredMethod("testWriteJSONArray", int.class, int.class, int.class)))
             .pointsFailedMin()
             .pointsPassedMax()
             .build())
-        .maxPoints(2)
+        .maxPoints(1)
         .build();
 
     private static final Criterion H2 = Criterion.builder()
         .shortDescription("H2 | Herausschreiben in JSON Dateien")
-        .addChildCriteria(H2_1, H2_2, H2_3, H2_4)
+        .addChildCriteria(H2_1, H2_2, H2_3, H2_4, H2_5, H2_6)
         .build();
 
     private static final Criterion H3_1_1 = Criterion.builder()

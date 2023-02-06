@@ -4,6 +4,7 @@ import h12.json.JSONElement;
 import h12.json.JSONNumber;
 import h12.json.implementation.node.JSONNumberNode;
 import h12.json.implementation.node.JSONStringNode;
+import org.mockito.ArgumentCaptor;
 import org.mockito.exceptions.base.MockitoAssertionError;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 
@@ -11,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static h12.json.implementation.node.JSONObjectNode.JSONObjectEntryNode;
 import static org.mockito.Mockito.*;
@@ -44,6 +46,24 @@ public class TutorTests_WriteJSONTest {
         if (verifier != null) verifier.accept(context);
     }
 
+    public void testWriteJSONNodeNoIndent(JSONElement element, String expected, Consumer<Context> verifier) throws IOException {
+        Context context = contextBuilder()
+            .add("input", expected)
+            .subject(element.getClass().getSimpleName() + "#write(BufferedWriter, int)")
+            .build();
+
+        String actual = removeWhiteSpace(getActual(element, 0, context));
+
+        assertEquals(createJSONString(removeWhiteSpace(expected)), createJSONString(actual), context,
+            TR -> "The method did not return the correct value");
+
+        if (verifier != null) verifier.accept(context);
+    }
+
+    public String removeWhiteSpace(String string) {
+        return string.chars().filter(i -> !Character.isWhitespace(i)).mapToObj(Character::toString).collect(Collectors.joining());
+    }
+
     public String createJSONString(String json) {
         return "\\<span style=\"white-space: pre;\"\\>\n" + json + "\n\\</span\\>";
     }
@@ -57,13 +77,13 @@ public class TutorTests_WriteJSONTest {
         return writer.getBuffer().toString();
     }
 
-    public JSONNumberNode createMockedJSONNumber(Integer value) throws IOException {
-        JSONNumberNode number = mock(JSONNumberNode.class);
+    public JSONNumberNode createMockedJSONNumber(Integer value, ArgumentCaptor<Integer> indentCaptor) throws IOException {
+        JSONNumberNode number = spy(new JSONNumberNode(value));
 
         doAnswer(invocation -> {
             ((BufferedWriter) invocation.getArgument(0)).write(Integer.toString(value));
             return null;
-        }).when(number).write(any(), anyInt());
+        }).when(number).write(any(), indentCaptor == null ? anyInt() : indentCaptor.capture());
 
         doReturn(value).when(number).getNumber();
 
@@ -71,7 +91,7 @@ public class TutorTests_WriteJSONTest {
     }
 
     public JSONStringNode createMockedJSONString(String value) throws IOException {
-        JSONStringNode string = mock(JSONStringNode.class);
+        JSONStringNode string = spy(new JSONStringNode(value));
 
         doAnswer(invocation -> {
             ((BufferedWriter) invocation.getArgument(0)).write("\"" + value + "\"");
@@ -83,13 +103,13 @@ public class TutorTests_WriteJSONTest {
         return string;
     }
 
-    public JSONObjectEntryNode createMockedJSONObjectEntry(String identifier, Integer value) throws IOException {
-        JSONObjectEntryNode entry = mock(JSONObjectEntryNode.class);
+    public JSONObjectEntryNode createMockedJSONObjectEntry(String identifier, Integer value, ArgumentCaptor<Integer> indentCaptor) throws IOException {
+        JSONObjectEntryNode entry = spy(new JSONObjectEntryNode(new JSONStringNode(identifier), new JSONNumberNode(value)));
 
         doAnswer(invocation -> {
             ((BufferedWriter) invocation.getArgument(0)).write("\"" + identifier + "\": " + value);
             return null;
-        }).when(entry).write(any(), anyInt());
+        }).when(entry).write(any(), indentCaptor == null ? anyInt() : indentCaptor.capture());
 
         doReturn(identifier).when(entry).getIdentifier();
         doReturn(JSONNumber.of(value)).when(entry).getValue();
@@ -107,6 +127,14 @@ public class TutorTests_WriteJSONTest {
                 fail(context, TR -> "Expected the method write of the object " + jsonElement.toString() +
                     " to be called exactly " + count + " times but it wasn't.\n Original message: " + e.getMessage());
             }
+        };
+    }
+
+    protected Consumer<Context> createIndentVerifier(int expected, ArgumentCaptor<Integer> indentCaptor, JSONElement element) {
+        return context -> {
+            assertEquals(expected, indentCaptor.getValue(), context,
+                TR -> "The method write of the object " + element.toString() + " wasn't called with the correct indentation." +
+                    " (Not tested by public grader)");
         };
     }
 }

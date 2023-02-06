@@ -62,7 +62,7 @@ public class TutorTests_H5_3_FileOperationHandlerTest {
     @CsvSource({"test.txt", "test", "test.", "test.jso", "test.json.txt"})
     public void testCheckFileNameExceptionInvalidFileType(String filename) {
         Context context = new BasicContext.Builder.Factory().builder()
-            .property("fileName", filename)
+            .add("fileName", filename)
             .subject("FileOperationHandler#checkFileName(String)")
             .build();
 

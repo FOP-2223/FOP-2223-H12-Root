@@ -16,7 +16,7 @@ public class TutorTests_H2_WriteJSONObjectEntryTest extends TutorTests_WriteJSON
     @CsvSource("a, 1")
     public void testWriteJSONObjectEntry(String key, Integer value) throws Throwable {
         JSONStringNode mockedJSONString = createMockedJSONString(key);
-        JSONNumberNode mockedJSONNumber = createMockedJSONNumber(value);
+        JSONNumberNode mockedJSONNumber = createMockedJSONNumber(value, null);
         JSONObjectEntry entry = new JSONObjectEntryNode(mockedJSONString, mockedJSONNumber);
         String expected = "\"" + key + "\": " + value;
 
