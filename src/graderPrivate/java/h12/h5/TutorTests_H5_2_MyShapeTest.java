@@ -14,8 +14,7 @@ import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
 
 import static h12.json.JSONObject.JSONObjectEntry;
 import static org.mockito.Mockito.*;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertThrows;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
 @TestForSubmission()
 public class TutorTests_H5_2_MyShapeTest {
@@ -23,8 +22,8 @@ public class TutorTests_H5_2_MyShapeTest {
     @ParameterizedTest
     @CsvSource({"rectangle", "circle", "custom_line", "polygon"})
     public void testFromJSONSuccess(String name) {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("name", name)
+        Context context = contextBuilder()
+            .add("name", name)
             .subject("MyShape.fromJSON()")
             .build();
 
@@ -53,7 +52,7 @@ public class TutorTests_H5_2_MyShapeTest {
             }
         }
 
-        MyShape actual = MyShape.fromJSON(input);
+        MyShape actual = callObject(() -> MyShape.fromJSON(input), context, TR -> "Unexpected Exception was thrown");
 
         assertEquals(shape, actual, context,
             TR -> "The method did not return the correct value");
@@ -75,8 +74,8 @@ public class TutorTests_H5_2_MyShapeTest {
     @ParameterizedTest
     @CsvSource({"invalidType", "triangle", "straight_line"})
     public void testFromJSONInvalidShapeType(String invalidType) {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("name", invalidType)
+        Context context = contextBuilder()
+            .add("name", invalidType)
             .subject("MyShape.fromJSON(JSONElement)")
             .build();
 
@@ -95,22 +94,27 @@ public class TutorTests_H5_2_MyShapeTest {
 
     @Test
     public void testFromJSONInvalidFormat() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "invalid format")
+        Context contextEmpty = contextBuilder()
+            .add("input", "empty")
             .subject("MyShape.fromJSON(JSONElement)")
             .build();
 
         JSONObject input = JSONObject.of();
 
-        assertThrows(JSONParseException.class, () -> MyShape.fromJSON(input), context,
+        assertThrows(JSONParseException.class, () -> MyShape.fromJSON(input), contextEmpty,
             TR -> "The method fromJSON(JSONElement) did not throw the correct exception when given an input with an invalid format");
 
         try {
             MyShape.fromJSON(input);
         } catch (JSONParseException exc) {
             assertEquals("An exception occurred while trying to parse a JSON file. No entry associated with the key name exists",
-                exc.getMessage(), context, TR -> "The thrown exception does not contain the correct message");
+                exc.getMessage(), contextEmpty, TR -> "The thrown exception does not contain the correct message");
         }
+
+        Context contextInvalidFormat = contextBuilder()
+            .add("input", "invalid format")
+            .subject("MyShape.fromJSON(JSONElement)")
+            .build();
 
         JSONToShapeConverter jsonToShapeConverter = mock(JSONToShapeConverter.class);
         MyShape.setJsonToShapeConverter(jsonToShapeConverter);
@@ -119,14 +123,14 @@ public class TutorTests_H5_2_MyShapeTest {
 
         doThrow(new JSONParseException("Invalid MyShape format!")).when(jsonToShapeConverter).circleFromJSON(any());
 
-        assertThrows(JSONParseException.class, () -> MyShape.fromJSON(input2), context,
+        assertThrows(JSONParseException.class, () -> MyShape.fromJSON(input2), contextInvalidFormat,
             TR -> "The method fromJSON(JSONElement) did not throw the correct exception when given an input with an invalid format");
 
         try {
             MyShape.fromJSON(input2);
         } catch (JSONParseException exc) {
             assertEquals("An exception occurred while trying to parse a JSON file. Invalid MyShape format!",
-                exc.getMessage(), context, TR -> "The thrown exception does not contain the correct message");
+                exc.getMessage(), contextInvalidFormat, TR -> "The thrown exception does not contain the correct message");
         }
     }
 

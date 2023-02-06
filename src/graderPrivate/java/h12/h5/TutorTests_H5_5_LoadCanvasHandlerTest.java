@@ -43,7 +43,7 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
     @ParameterizedTest
     @CsvSource("#FF0000, 1, 2, 3, #00FF00, #0000FF")
     public void testCanvasFromJSONObjectSuccess(String colorCode, Integer x, Integer y, Integer radius, String fillColor, String borderColor) throws NoSuchFieldException, IllegalAccessException {
-        Context context = new BasicContext.Builder.Factory().builder()
+        Context context = contextBuilder()
             .subject("LoadCanvasHandler#canvasFromJSONElement(JSONElement)")
             .build();
 
@@ -77,8 +77,8 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
 
     @Test
     public void testCanvasFromJSONElementNull() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", null)
+        Context context = contextBuilder()
+            .add("input", null)
             .subject("LoadCanvasHandler#canvasFromJSONElement(JSONElement)")
             .build();
 
@@ -103,8 +103,8 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
 
     @Test
     public void testCanvasFromJSONElementInvalidFormat() {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("input", "invalid")
+        Context contextEmpty = contextBuilder()
+            .add("input", "empty")
             .subject("LoadCanvasHandler#canvasFromJSONElement(JSONElement)")
             .build();
 
@@ -113,26 +113,31 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
 
         JSONObject emptyInput = JSONObject.of();
 
-        assertThrows(JSONParseException.class, () -> loadCanvasHandler.canvasFromJSONElement(emptyInput), context,
-            TR -> "The method did not throw the correct exception when the input is invalid");
+        assertThrows(JSONParseException.class, () -> loadCanvasHandler.canvasFromJSONElement(emptyInput), contextEmpty,
+            TR -> "The method did not throw the correct exception when the input is empty");
 
         try {
             loadCanvasHandler.canvasFromJSONElement(emptyInput);
         } catch (JSONParseException exc) {
             assertEquals("An exception occurred while trying to parse a JSON file. Invalid MyShape format!", exc.getMessage(),
-                context, TR -> "The thrown exception does not contain the correct message");
+                contextEmpty, TR -> "The thrown exception does not contain the correct message");
         }
+
+        Context contextInvalid = contextBuilder()
+            .add("input", "invalid format")
+            .subject("LoadCanvasHandler#canvasFromJSONElement(JSONElement)")
+            .build();
 
         JSONNumberNode invalidTypeInput = new JSONNumberNode(1);
 
-        assertThrows(JSONParseException.class, () -> loadCanvasHandler.canvasFromJSONElement(invalidTypeInput), context,
+        assertThrows(JSONParseException.class, () -> loadCanvasHandler.canvasFromJSONElement(invalidTypeInput), contextInvalid,
             TR -> "The method canvasFromJSONElement(JSONElement) did not throw the correct exception when the input is invalid");
 
         try {
             loadCanvasHandler.canvasFromJSONElement(invalidTypeInput);
         } catch (JSONParseException exc) {
             assertEquals("An exception occurred while trying to parse a JSON file. Invalid MyShape format!", exc.getMessage(),
-                context, TR -> "The thrown exception does not contain the correct message");
+                contextInvalid, TR -> "The thrown exception does not contain the correct message");
         }
     }
 
@@ -211,7 +216,6 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
         assertEquals(invalidFileName, checkFileNameArgumentCaptor.getValue(), context,
             TR -> "The method did not call the method checkFileName(String) with the correct value");
 
-        verify(json, never()).setIOFactory(any());
         verify(json, never()).write(any(), any());
         verify(loadCanvasHandler, never()).showSuccessDialog(any());
         verify(loadCanvasHandler, never()).setupNewFrame();

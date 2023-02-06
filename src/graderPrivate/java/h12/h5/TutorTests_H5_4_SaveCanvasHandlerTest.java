@@ -25,8 +25,7 @@ import java.util.List;
 
 import static h12.json.JSONObject.JSONObjectEntry;
 import static org.mockito.Mockito.*;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertTrue;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
 @SuppressWarnings("Duplicates")
 @TestForSubmission()
@@ -43,7 +42,7 @@ public class TutorTests_H5_4_SaveCanvasHandlerTest {
     @ParameterizedTest
     @CsvSource("#FF0000")
     public void testCanvasToJSONObject(String colorCode) throws NoSuchFieldException, IllegalAccessException {
-        Context context = new BasicContext.Builder.Factory().builder()
+        Context context = contextBuilder()
             .subject("SaveCanvasHandler#canvasTOJSONObject()")
             .build();
 
@@ -69,7 +68,7 @@ public class TutorTests_H5_4_SaveCanvasHandlerTest {
         JSONObject actual = saveCanvasHandler.canvasToJSONObject();
 
         assertEquals(2, actual.getObjectEntries().size(), context,
-            TR -> "The JSONObject returned by the method does not contain the correct amount of elements");
+            TR -> "The JSONObject returned by the method does not contain the correct amount of entries");
 
         assertTrue(actual.getObjectEntries().contains(JSONObjectEntry.of("background", null)), context,
             TR -> "The JSONObject returned by the method does not contain the key background");
@@ -156,7 +155,6 @@ public class TutorTests_H5_4_SaveCanvasHandlerTest {
         assertEquals(invalidFileName, checkFileNameArgumentCaptor.getValue(), context,
             TR -> "The method did not call the method checkFileName(String) with the correct value");
 
-        verify(json, never()).setIOFactory(any());
         verify(json, never()).write(any(), any());
         verify(saveCanvasHandler, never()).showSuccessDialog(any());
         verify(saveCanvasHandler, never()).showErrorDialog(any());

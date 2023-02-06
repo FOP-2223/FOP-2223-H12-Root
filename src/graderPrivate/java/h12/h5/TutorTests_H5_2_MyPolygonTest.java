@@ -17,8 +17,7 @@ import java.awt.*;
 import java.util.List;
 
 import static h12.json.JSONObject.JSONObjectEntry;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertEquals;
-import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertTrue;
+import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 
 @SuppressWarnings("Duplicates")
 @TestForSubmission()
@@ -27,16 +26,20 @@ public class TutorTests_H5_2_MyPolygonTest {
     @ParameterizedTest
     @CsvSource("1, 2, 3, 4, #FF0000, #00FF00, 1")
     public void testToJSON(Integer ax, Integer ay, Integer bx, Integer by, String fillColorCode, String borderColorCode, Integer edges) {
-        Context context = new BasicContext.Builder.Factory().builder()
-            .property("values", "%d, %d, %d, %d, %s, %s, %d".formatted(ax, ay, bx, by, fillColorCode, borderColorCode, edges))
+        Context context = contextBuilder()
+            .add("x", "[%d, %d]".formatted(ax, bx))
+            .add("y", "[%d, %d]".formatted(ay, by))
+            .add("fillColor", fillColorCode)
+            .add("borderColor", borderColorCode)
+            .add("edges", edges)
             .subject("MyPolygon#toJSON()")
             .build();
 
         Color fillColor = Color.decode(fillColorCode);
         Color borderColor = Color.decode(borderColorCode);
 
-        MyPolygon circle = new MyPolygon(List.of(ax, ay), List.of(bx, by), fillColor, borderColor, edges);
-        JSONObject actual = circle.toJSON();
+        MyPolygon polygon = new MyPolygon(List.of(ax, ay), List.of(bx, by), fillColor, borderColor, edges);
+        JSONObject actual = callObject(polygon::toJSON, context, TR -> "Unexpected exception was thrown");
 
         String[] keys = new String[]{"name", "x", "y", "fillColor", "borderColor", "edges"};
         JSONElement[] values = new JSONElement[]{
