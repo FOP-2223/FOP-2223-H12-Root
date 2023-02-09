@@ -55,6 +55,13 @@ public class JSONConstantNode extends JSONNode implements JSONConstant {
     }
 
     @Override
+    public String toString() {
+        return "JSONConstantNode{" +
+            "constant=" + constant +
+            '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(constant);
     }
