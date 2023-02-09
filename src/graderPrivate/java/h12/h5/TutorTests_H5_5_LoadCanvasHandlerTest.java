@@ -9,6 +9,7 @@ import h12.ioFactory.FileSystemIOFactory;
 import h12.ioFactory.IOFactory;
 import h12.json.JSON;
 import h12.json.JSONArray;
+import h12.json.JSONElement;
 import h12.json.JSONObject;
 import h12.json.implementation.node.JSONNumberNode;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.MockedStatic;
 import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 import org.tudalgo.algoutils.tutor.general.assertions.Context;
 import org.tudalgo.algoutils.tutor.general.assertions.basic.BasicContext;
@@ -55,24 +57,36 @@ public class TutorTests_H5_5_LoadCanvasHandlerTest {
             JSONObjectEntry.of("background", ColorHelper.toJSON(background))
         );
 
-        LoadCanvasHandler loadCanvasHandler = mock(LoadCanvasHandler.class);
-        doCallRealMethod().when(loadCanvasHandler).canvasFromJSONElement(any());
+        try (MockedStatic<MyShape> mockUtils = mockStatic(MyShape.class, CALLS_REAL_METHODS)) {
 
-        loadCanvasHandler.canvasFromJSONElement(input);
+            ArgumentCaptor<JSONElement> inputCapture = ArgumentCaptor.forClass(JSONElement.class);
 
-        Field shapesField = LoadCanvasHandler.class.getDeclaredField("shapes");
-        shapesField.setAccessible(true);
-        List<MyShape> actualShapes = (List<MyShape>) shapesField.get(loadCanvasHandler);
+            mockUtils.when(() -> MyShape.fromJSON(inputCapture.capture())).thenReturn(shape);
 
-        Field backgroundColorField = LoadCanvasHandler.class.getDeclaredField("backgroundColor");
-        backgroundColorField.setAccessible(true);
-        Color actualBackgroundColor = (Color) backgroundColorField.get(loadCanvasHandler);
+            LoadCanvasHandler loadCanvasHandler = mock(LoadCanvasHandler.class);
+            doCallRealMethod().when(loadCanvasHandler).canvasFromJSONElement(any());
 
-        assertEquals(List.of(shape), actualShapes, context,
-            TR -> "The method did not set the attribute shapes to the correct value");
+            loadCanvasHandler.canvasFromJSONElement(input);
 
-        assertEquals(background, actualBackgroundColor, context,
-            TR -> "The method did not set the field backgroundColor to the correct value");
+            Field shapesField = LoadCanvasHandler.class.getDeclaredField("shapes");
+            shapesField.setAccessible(true);
+            List<MyShape> actualShapes = (List<MyShape>) shapesField.get(loadCanvasHandler);
+
+            Field backgroundColorField = LoadCanvasHandler.class.getDeclaredField("backgroundColor");
+            backgroundColorField.setAccessible(true);
+            Color actualBackgroundColor = (Color) backgroundColorField.get(loadCanvasHandler);
+
+            assertEquals(List.of(shape), actualShapes, context,
+                TR -> "The method did not set the attribute shapes to the correct value");
+
+            assertEquals(background, actualBackgroundColor, context,
+                TR -> "The method did not set the field backgroundColor to the correct value");
+
+            assertEquals(input.getValueOf("shapes").getArray()[0], inputCapture.getValue(), context,
+                TR -> "The method MyShape.fromJSON(JSONElement) wasn't called with the correct JSONElement");
+        }
+
+
     }
 
     @Test
