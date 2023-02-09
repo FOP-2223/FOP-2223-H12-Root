@@ -55,6 +55,13 @@ public class JSONStringNode extends JSONNode implements JSONString {
     }
 
     @Override
+    public String toString() {
+        return "JSONStringNode{" +
+            "string='" + string + '\'' +
+            '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(string);
     }

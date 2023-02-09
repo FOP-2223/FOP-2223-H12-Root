@@ -73,6 +73,13 @@ public class JSONNumberNode extends JSONNode implements JSONNumber {
     }
 
     @Override
+    public String toString() {
+        return "JSONNumberNode{" +
+            "number=" + number +
+            '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(number);
     }

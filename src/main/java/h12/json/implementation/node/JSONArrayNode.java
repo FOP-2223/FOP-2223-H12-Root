@@ -69,6 +69,13 @@ public class JSONArrayNode extends JSONNode implements JSONArray {
     }
 
     @Override
+    public String toString() {
+        return "JSONArrayNode{" +
+            "list=" + list +
+            '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(list);
     }
